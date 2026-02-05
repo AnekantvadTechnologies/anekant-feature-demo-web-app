@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+/* ── Dark theme (default) ── */
+:root {
+  --bg-primary: #0a0f1a;
+  --bg-secondary: #111827;
+  --bg-card: #1a2332;
+  --bg-card-hover: #1f2b3d;
+
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --accent-cyan: #22d3ee;
+  --accent-blue: #3b82f6;
+  --accent-purple: #a78bfa;
+  --accent-green: #34d399;
+  --accent-red: #f87171;
+  --accent-orange: #fb923c;
+  --accent-yellow: #fbbf24;
+
+  --glow-cyan: 0 0 20px rgba(34, 211, 238, 0.4);
+  --glow-blue: 0 0 20px rgba(59, 130, 246, 0.4);
+  --glow-green: 0 0 20px rgba(52, 211, 153, 0.4);
+  --glow-red: 0 0 20px rgba(248, 113, 113, 0.4);
+
+  --border-subtle: rgba(148, 163, 184, 0.1);
+  --border-accent: rgba(34, 211, 238, 0.3);
+
+  --transition-theme: 0.3s ease;
+
+  color-scheme: dark;
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --accent-cyan: #0891b2;
+  --accent-blue: #2563eb;
+  --accent-purple: #7c3aed;
+  --accent-green: #059669;
+  --accent-red: #dc2626;
+  --accent-orange: #ea580c;
+  --accent-yellow: #d97706;
+
+  --glow-cyan: 0 0 20px rgba(8, 145, 178, 0.2);
+  --glow-blue: 0 0 20px rgba(37, 99, 235, 0.2);
+  --glow-green: 0 0 20px rgba(5, 150, 105, 0.2);
+  --glow-red: 0 0 20px rgba(220, 38, 38, 0.2);
+
+  --border-subtle: rgba(15, 23, 42, 0.1);
+  --border-accent: rgba(8, 145, 178, 0.3);
+
+  color-scheme: light;
+}
+
+/* ── Base styles ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  transition: background-color var(--transition-theme),
+    color var(--transition-theme);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Utility classes for theme colors ── */
+.text-accent-cyan {
+  color: var(--accent-cyan);
+}
+.text-accent-blue {
+  color: var(--accent-blue);
+}
+.text-accent-green {
+  color: var(--accent-green);
+}
+.text-accent-red {
+  color: var(--accent-red);
+}
+.text-accent-purple {
+  color: var(--accent-purple);
+}
+
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+.bg-card {
+  background-color: var(--bg-card);
+}
+
+/* ── Slide base ── */
+.slide {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Pipeline node styling ── */
+.pipeline-node {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 12px 20px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.pipeline-node.active {
+  border-color: var(--accent-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+
+/* ── Code block styling ── */
+code {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  background: var(--bg-card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: var(--accent-cyan);
+}
+
+/* ── Keyframe animations ── */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ── Selection ── */
+::selection {
+  background: color-mix(in srgb, var(--accent-cyan) 30%, transparent);
+  color: var(--text-primary);
+}
