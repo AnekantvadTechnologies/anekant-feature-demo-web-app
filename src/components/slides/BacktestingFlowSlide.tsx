@@ -232,10 +232,10 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
     <SlideLayout className="justify-start pt-8">
       <div ref={titleRef} className="mb-4 text-center opacity-0">
         <h2 className="text-5xl font-extrabold tracking-tight" style={{ color: "var(--text-primary)" }}>
-          Replay the Markets, Tick by Tick
+          Benchmark AI Before You Deploy
         </h2>
         <p className="mt-2 text-base font-medium" style={{ color: "var(--text-muted)" }}>
-          Same engine, same strategy, same AI agent — historical data in, simulated results out
+          Test AI agents with production accuracy, then deploy with confidence
         </p>
       </div>
 
@@ -299,15 +299,15 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
           <text ref={clockRef} x={CLOCK_CX + 24} y={CLOCK_CY + 5} textAnchor="middle" className="text-[13px] font-bold" fill="var(--accent-orange)">09:15</text>
         </g>
 
-        {/* "Same strategy code" badge inside engine area */}
+        {/* "Same strategy code" badge below engine */}
         <g className="badge-node" style={{ opacity: 0 }}>
           <rect
-            x={ENGINE.cx - ENGINE.w / 2 + 10} y={ENGINE.cy + ENGINE.h / 2 - 22}
-            width={132} height={19} rx={4}
+            x={ENGINE.cx - 80} y={ENGINE.cy + ENGINE.h / 2 + 10}
+            width={160} height={26} rx={5}
             fill="color-mix(in srgb, var(--accent-emerald) 18%, transparent)"
-            stroke="var(--accent-emerald)" strokeWidth={0.6}
+            stroke="var(--accent-emerald)" strokeWidth={0.8}
           />
-          <text x={ENGINE.cx - ENGINE.w / 2 + 76} y={ENGINE.cy + ENGINE.h / 2 - 8} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-emerald)">Same strategy code</text>
+          <text x={ENGINE.cx} y={ENGINE.cy + ENGINE.h / 2 + 28} textAnchor="middle" className="text-[11px] font-semibold" fill="var(--accent-emerald)">Same strategy code</text>
         </g>
 
         {/* Replay OMS */}
@@ -363,6 +363,17 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
         <g className="badge-node" style={{ opacity: 0 }}>
           <rect x={VB_W - 180} y={36} width={144} height={34} rx={7} fill="color-mix(in srgb, var(--accent-amber) 15%, transparent)" stroke="var(--accent-amber)" strokeWidth={1} />
           <text x={VB_W - 108} y={59} textAnchor="middle" className="text-[13px] font-bold" fill="var(--accent-amber)">▶▶ Fast replay</text>
+        </g>
+
+        {/* ═══════════ WHY THIS MATTERS FOR AI - KEY CALLOUT ═══════════ */}
+        <g className="badge-node" style={{ opacity: 0 }}>
+          <rect x={36} y={VB_H - 190} width={440} height={155} rx={12} fill="color-mix(in srgb, var(--accent-emerald) 12%, var(--bg-card))" stroke="var(--accent-emerald)" strokeWidth={1.5} />
+          <text x={60} y={VB_H - 158} className="text-[15px] font-bold" fill="var(--accent-emerald)">Why This Matters for AI</text>
+          <text x={60} y={VB_H - 130} className="text-[12px]" fill="var(--text-muted)">• AI agent runs identical code in backtest</text>
+          <text x={60} y={VB_H - 106} className="text-[12px]" fill="var(--text-muted)">• Benchmark performance before deployment</text>
+          <text x={60} y={VB_H - 82} className="text-[12px]" fill="var(--text-muted)">• Build confidence with production-accurate results</text>
+          <text x={60} y={VB_H - 54} className="text-[11px] font-semibold" fill="var(--accent-emerald)">Impossible with traditional setups — different code</text>
+          <text x={60} y={VB_H - 38} className="text-[11px] font-semibold" fill="var(--accent-emerald)">means you can't trust AI backtests</text>
         </g>
 
         {/* ═══════════ DOTS ═══════════ */}

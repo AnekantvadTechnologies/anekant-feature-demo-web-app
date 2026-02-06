@@ -6,11 +6,15 @@ import { Navigation } from "@/components/layout/Navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 import { EngineFlowSlide } from "@/components/slides/EngineFlowSlide";
+import { TraditionalBacktestSlide } from "@/components/slides/TraditionalBacktestSlide";
+import { CodeReuseSlide } from "@/components/slides/CodeReuseSlide";
 import { LLMFlowSlide } from "@/components/slides/LLMFlowSlide";
 import { BacktestingFlowSlide } from "@/components/slides/BacktestingFlowSlide";
 
 const SLIDES = [
   { id: "engine-flow", Component: EngineFlowSlide },
+  { id: "traditional-backtest", Component: TraditionalBacktestSlide },
+  { id: "code-reuse", Component: CodeReuseSlide },
   { id: "llm-flow", Component: LLMFlowSlide },
   { id: "backtesting-flow", Component: BacktestingFlowSlide },
 ];

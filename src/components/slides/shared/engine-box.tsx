@@ -76,10 +76,10 @@ export function EngineBox({
       {badge && (
         <text
           x={cx - w / 2 + 22}
-          y={cy - h / 2 + 46}
-          className="text-[11px] font-medium"
+          y={cy - h / 2 + 48}
+          className="text-[10px] font-medium"
           fill="var(--accent-emerald)"
-          opacity={0.8}
+          opacity={0.85}
         >
           {badge}
         </text>
