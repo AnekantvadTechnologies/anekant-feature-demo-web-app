@@ -1,18 +1,19 @@
 /* ────────────────────────────────────────────────────────────
  *  Shared constants used across all slide SVG diagrams
+ *  SCALED UP 20% from original dimensions
  * ──────────────────────────────────────────────────────────── */
 
-/** Default SVG viewBox dimensions */
-export const VB_W = 1400;
-export const VB_H = 780;
+/** Default SVG viewBox dimensions (20% larger) */
+export const VB_W = 1680;
+export const VB_H = 936;
 
 /** Internal items rendered inside each engine box */
 export const ENGINE_ITEMS = ["Candles", "Indicators", "Metrics", "Strategy"];
 
-/** Dimensions for internal sub-items within an engine */
-export const ITEM_H = 26;
-export const ITEM_W = 110;
-export const ITEM_GAP = 6;
+/** Dimensions for internal sub-items within an engine (20% larger) */
+export const ITEM_H = 31;
+export const ITEM_W = 132;
+export const ITEM_GAP = 7;
 
 /** Calculate the Y position of an internal item within an engine */
 export function itemY(

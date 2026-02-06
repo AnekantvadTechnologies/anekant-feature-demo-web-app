@@ -1,69 +1,73 @@
 @import "tailwindcss";
 
-/* ── Dark theme (default) — Tech Minimalist ── */
+/* ── Dark theme (default) — Warm Industrial ── */
 :root {
-  /* Backgrounds - slightly warmer dark tones */
-  --bg-primary: #0c0f14;
-  --bg-secondary: #13161d;
-  --bg-card: #1a1d26;
-  --bg-card-hover: #22252f;
+  /* Backgrounds - rich, warm dark tones */
+  --bg-primary: #0f0d0a;
+  --bg-secondary: #181510;
+  --bg-card: #221e18;
+  --bg-card-hover: #2c2720;
 
-  /* Text - softer contrast */
-  --text-primary: #e8eaed;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  /* Text - warm cream tones */
+  --text-primary: #f5f0e6;
+  --text-secondary: #b8a990;
+  --text-muted: #7a6f5f;
 
-  /* Accents - desaturated, sophisticated tones */
-  --accent-cyan: #5eead4;
-  --accent-blue: #60a5fa;
-  --accent-purple: #c4b5fd;
-  --accent-green: #6ee7b7;
-  --accent-red: #fca5a5;
-  --accent-orange: #fdba74;
-  --accent-yellow: #fcd34d;
+  /* Accents - warm, sophisticated palette (NO blue/purple) */
+  --accent-amber: #fbbf24;
+  --accent-gold: #f59e0b;
+  --accent-orange: #f97316;
+  --accent-coral: #fb7185;
+  --accent-green: #84cc16;
+  --accent-emerald: #34d399;
+  --accent-red: #f87171;
+  --accent-rose: #fda4af;
 
-  /* Reduced glow intensity for minimalist feel */
-  --glow-cyan: 0 0 24px rgba(94, 234, 212, 0.15);
-  --glow-blue: 0 0 24px rgba(96, 165, 250, 0.15);
-  --glow-green: 0 0 24px rgba(110, 231, 183, 0.15);
-  --glow-red: 0 0 24px rgba(252, 165, 165, 0.15);
-  --glow-purple: 0 0 24px rgba(196, 181, 253, 0.15);
+  /* Warm glows */
+  --glow-amber: 0 0 28px rgba(251, 191, 36, 0.2);
+  --glow-gold: 0 0 28px rgba(245, 158, 11, 0.2);
+  --glow-orange: 0 0 28px rgba(249, 115, 22, 0.2);
+  --glow-coral: 0 0 28px rgba(251, 113, 133, 0.2);
+  --glow-green: 0 0 28px rgba(132, 204, 22, 0.2);
+  --glow-red: 0 0 28px rgba(248, 113, 113, 0.2);
 
-  --border-subtle: rgba(156, 163, 175, 0.08);
-  --border-accent: rgba(94, 234, 212, 0.2);
+  --border-subtle: rgba(184, 169, 144, 0.1);
+  --border-accent: rgba(251, 191, 36, 0.25);
 
   --transition-theme: 0.3s ease;
 
   color-scheme: dark;
 }
 
-/* ── Light theme — Tech Minimalist ── */
+/* ── Light theme — Warm Industrial ── */
 [data-theme="light"] {
-  --bg-primary: #fafbfc;
-  --bg-secondary: #f3f4f6;
+  --bg-primary: #faf8f5;
+  --bg-secondary: #f3efe8;
   --bg-card: #ffffff;
-  --bg-card-hover: #f9fafb;
+  --bg-card-hover: #faf7f2;
 
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --text-muted: #a8a29e;
 
-  --accent-cyan: #0d9488;
-  --accent-blue: #2563eb;
-  --accent-purple: #7c3aed;
-  --accent-green: #059669;
+  --accent-amber: #d97706;
+  --accent-gold: #b45309;
+  --accent-orange: #c2410c;
+  --accent-coral: #e11d48;
+  --accent-green: #65a30d;
+  --accent-emerald: #059669;
   --accent-red: #dc2626;
-  --accent-orange: #ea580c;
-  --accent-yellow: #d97706;
+  --accent-rose: #e11d48;
 
-  --glow-cyan: 0 0 20px rgba(13, 148, 136, 0.12);
-  --glow-blue: 0 0 20px rgba(37, 99, 235, 0.12);
-  --glow-green: 0 0 20px rgba(5, 150, 105, 0.12);
-  --glow-red: 0 0 20px rgba(220, 38, 38, 0.12);
-  --glow-purple: 0 0 20px rgba(124, 58, 237, 0.12);
+  --glow-amber: 0 0 24px rgba(217, 119, 6, 0.15);
+  --glow-gold: 0 0 24px rgba(180, 83, 9, 0.15);
+  --glow-orange: 0 0 24px rgba(194, 65, 12, 0.15);
+  --glow-coral: 0 0 24px rgba(225, 29, 72, 0.15);
+  --glow-green: 0 0 24px rgba(101, 163, 13, 0.15);
+  --glow-red: 0 0 24px rgba(220, 38, 38, 0.15);
 
-  --border-subtle: rgba(17, 24, 39, 0.06);
-  --border-accent: rgba(13, 148, 136, 0.2);
+  --border-subtle: rgba(28, 25, 23, 0.08);
+  --border-accent: rgba(217, 119, 6, 0.25);
 
   color-scheme: light;
 }
@@ -93,28 +97,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Typography refinements ── */
+/* ── Typography refinements (scaled up 20%) ── */
 h1, h2, h3, h4, h5, h6 {
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-  letter-spacing: -0.02em;
-  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-weight: 800;
 }
 
 /* ── Utility classes for theme colors ── */
-.text-accent-cyan {
-  color: var(--accent-cyan);
+.text-accent-amber {
+  color: var(--accent-amber);
 }
-.text-accent-blue {
-  color: var(--accent-blue);
+.text-accent-gold {
+  color: var(--accent-gold);
+}
+.text-accent-orange {
+  color: var(--accent-orange);
+}
+.text-accent-coral {
+  color: var(--accent-coral);
 }
 .text-accent-green {
   color: var(--accent-green);
 }
 .text-accent-red {
   color: var(--accent-red);
-}
-.text-accent-purple {
-  color: var(--accent-purple);
 }
 
 .bg-primary {
@@ -127,7 +134,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--bg-card);
 }
 
-/* ── Slide base ── */
+/* ── Slide base (scaled padding) ── */
 .slide {
   width: 100%;
   height: 100%;
@@ -135,7 +142,7 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem 4rem;
+  padding: 2.4rem 4.8rem;
   position: relative;
   overflow: hidden;
 }
@@ -144,36 +151,36 @@ h1, h2, h3, h4, h5, h6 {
 .pipeline-node {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 12px 20px;
+  border-radius: 14px;
+  padding: 14px 24px;
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .pipeline-node.active {
-  border-color: var(--accent-cyan);
-  box-shadow: var(--glow-cyan);
+  border-color: var(--accent-amber);
+  box-shadow: var(--glow-amber);
 }
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 7px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--text-muted);
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 /* ── Code block styling ── */
 code {
   font-family: "JetBrains Mono", "Fira Code", monospace;
   background: var(--bg-card);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.85em;
-  color: var(--accent-cyan);
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 1em;
+  color: var(--accent-amber);
 }
 
 /* ── Keyframe animations ── */
@@ -189,6 +196,6 @@ code {
 
 /* ── Selection ── */
 ::selection {
-  background: color-mix(in srgb, var(--accent-cyan) 30%, transparent);
+  background: color-mix(in srgb, var(--accent-amber) 35%, transparent);
   color: var(--text-primary);
 }

@@ -20,39 +20,39 @@ export function Navigation({
   isLast,
 }: NavigationProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4">
+    <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5">
       {/* Prev button */}
       <button
         onClick={onPrev}
         disabled={isFirst}
-        className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm transition-all duration-200 disabled:opacity-20"
+        className="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-[15px] font-medium transition-all duration-200 disabled:opacity-20 hover:border-[var(--accent-amber)]"
         style={{
           color: "var(--text-secondary)",
           background: "var(--bg-card)",
           border: "1px solid var(--border-subtle)",
         }}
       >
-        <ChevronLeft size={16} />
+        <ChevronLeft size={18} />
         Prev
       </button>
 
       {/* Slide dots */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
         {Array.from({ length: total }, (_, i) => (
           <button
             key={i}
             onClick={() => onGoTo(i)}
-            className="h-2 rounded-full transition-all duration-300"
+            className="h-2.5 rounded-full transition-all duration-300"
             style={{
-              width: i === current ? "24px" : "8px",
+              width: i === current ? "30px" : "10px",
               background:
-                i === current ? "var(--accent-cyan)" : "var(--text-muted)",
+                i === current ? "var(--accent-amber)" : "var(--text-muted)",
               opacity: i === current ? 1 : 0.5,
             }}
           />
         ))}
         <span
-          className="ml-3 text-xs tabular-nums"
+          className="ml-4 text-sm tabular-nums font-medium"
           style={{ color: "var(--text-muted)" }}
         >
           {current + 1} / {total}
@@ -63,7 +63,7 @@ export function Navigation({
       <button
         onClick={onNext}
         disabled={isLast}
-        className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm transition-all duration-200 disabled:opacity-20"
+        className="flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-[15px] font-medium transition-all duration-200 disabled:opacity-20 hover:border-[var(--accent-amber)]"
         style={{
           color: "var(--text-secondary)",
           background: "var(--bg-card)",
@@ -71,7 +71,7 @@ export function Navigation({
         }}
       >
         Next
-        <ChevronRight size={16} />
+        <ChevronRight size={18} />
       </button>
     </div>
   );

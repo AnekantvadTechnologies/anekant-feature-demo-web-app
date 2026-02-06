@@ -7,7 +7,8 @@ import { EngineBox, ENGINE_ITEM_COUNT } from "./shared/engine-box";
 import { animateDot, animateDotReverse } from "./shared/animate-dot";
 
 /* ================================================================
- *  BacktestingFlowSlide
+ *  BacktestingFlowSlide - Warm Industrial Aesthetic
+ *  SCALED 20% LARGER - NO blue/purple colors
  *
  *  Full-screen diagram showing how live market data is replaced
  *  by historical replay:
@@ -21,25 +22,25 @@ interface BacktestingFlowSlideProps {
 }
 
 /* ────────────────────────────────────────────────────────────
- *  Layout constants — AI Agent fully integrated in backtest
+ *  Layout constants — AI Agent fully integrated in backtest (scaled 20%)
  * ──────────────────────────────────────────────────────────── */
-const S3 = { cx: 80, cy: 300, w: 110, h: 58 };
-const SQLITE = { cx: 240, cy: 300, w: 120, h: 58 };
-const DISPATCHER = { cx: 420, cy: 300, w: 155, h: 72 };
+const S3 = { cx: 96, cy: 360, w: 132, h: 70 };
+const SQLITE = { cx: 288, cy: 360, w: 144, h: 70 };
+const DISPATCHER = { cx: 504, cy: 360, w: 186, h: 86 };
 
-const ENGINE_W = 240;
-const ENGINE_H = 170;
-const ENGINE = { cx: 660, cy: 300, w: ENGINE_W, h: ENGINE_H };
+const ENGINE_W = 288;
+const ENGINE_H = 204;
+const ENGINE = { cx: 792, cy: 360, w: ENGINE_W, h: ENGINE_H };
 
-const REPLAY_OMS = { cx: 950, cy: 300, w: 140, h: 72 };
+const REPLAY_OMS = { cx: 1140, cy: 360, w: 168, h: 86 };
 
 /* Clock overlay position (over the engine) */
-const CLOCK_CX = ENGINE.cx + ENGINE.w / 2 - 30;
-const CLOCK_CY = ENGINE.cy - ENGINE.h / 2 - 20;
+const CLOCK_CX = ENGINE.cx + ENGINE.w / 2 - 36;
+const CLOCK_CY = ENGINE.cy - ENGINE.h / 2 - 24;
 
 /* AI Agent and LLM — Full integration, not ghosted */
-const AGENT = { cx: 820, cy: 540, w: 160, h: 110 };
-const LLM = { cx: 1040, cy: 540, w: 120, h: 70 };
+const AGENT = { cx: 984, cy: 648, w: 192, h: 132 };
+const LLM = { cx: 1248, cy: 648, w: 144, h: 84 };
 
 /* ────────────────────────────────────────────────────────────
  *  Path builders — Including full Agent/LLM integration
@@ -58,20 +59,20 @@ const pathEngineToReplayOms = () =>
 
 const pathReplayOmsToEngine = (): string => {
   const x1 = REPLAY_OMS.cx - REPLAY_OMS.w / 2;
-  const y1 = REPLAY_OMS.cy + 22;
+  const y1 = REPLAY_OMS.cy + 26;
   const x2 = ENGINE.cx + ENGINE.w / 2;
-  const y2 = ENGINE.cy + 25;
+  const y2 = ENGINE.cy + 30;
   const cpx = (x1 + x2) / 2;
-  return `M ${x1} ${y1} C ${cpx} ${y1 + 35}, ${cpx} ${y2 + 35}, ${x2} ${y2}`;
+  return `M ${x1} ${y1} C ${cpx} ${y1 + 42}, ${cpx} ${y2 + 42}, ${x2} ${y2}`;
 };
 
 /* Agent integration paths — full visibility */
 const pathEngineToAgent = (): string => {
-  const x1 = ENGINE.cx + 30;
+  const x1 = ENGINE.cx + 36;
   const y1 = ENGINE.cy + ENGINE.h / 2;
   const x2 = AGENT.cx - AGENT.w / 2;
-  const y2 = AGENT.cy - 20;
-  return `M ${x1} ${y1} C ${x1} ${y1 + 50}, ${x2 - 40} ${y2}, ${x2} ${y2}`;
+  const y2 = AGENT.cy - 24;
+  return `M ${x1} ${y1} C ${x1} ${y1 + 60}, ${x2 - 48} ${y2}, ${x2} ${y2}`;
 };
 
 const pathAgentToLLM = () =>
@@ -79,18 +80,18 @@ const pathAgentToLLM = () =>
 
 const pathLLMToAgent = (): string => {
   const x1 = LLM.cx - LLM.w / 2;
-  const y1 = LLM.cy + 20;
+  const y1 = LLM.cy + 24;
   const x2 = AGENT.cx + AGENT.w / 2;
-  const y2 = AGENT.cy + 20;
+  const y2 = AGENT.cy + 24;
   const cpx = (x1 + x2) / 2;
-  return `M ${x1} ${y1} C ${cpx} ${y1 + 25}, ${cpx} ${y2 + 25}, ${x2} ${y2}`;
+  return `M ${x1} ${y1} C ${cpx} ${y1 + 30}, ${cpx} ${y2 + 30}, ${x2} ${y2}`;
 };
 
 /* Engine internal fan-out */
 function engineInternalPath(itemIdx: number): string {
-  const x1 = ENGINE.cx - ENGINE.w / 2 + 20;
+  const x1 = ENGINE.cx - ENGINE.w / 2 + 24;
   const y1 = ENGINE.cy;
-  const x2 = itemX(ENGINE.cx) - 110 / 2;
+  const x2 = itemX(ENGINE.cx) - 132 / 2;
   const y2 = itemY(ENGINE.cy, ENGINE.h, itemIdx);
   return bezierH(x1, y1, x2, y2);
 }
@@ -130,22 +131,22 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
     });
 
     /* Title */
-    reveal.fromTo(titleRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" });
+    reveal.fromTo(titleRef.current, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" });
 
     /* Nodes (boxes first) */
     const nodes = svg.querySelectorAll(".ane-node");
-    reveal.fromTo(nodes, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out" }, "-=0.2");
+    reveal.fromTo(nodes, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out" }, "-=0.2");
 
     /* Paths (after nodes, with opacity) */
-    reveal.to(allPaths, { opacity: 0.3, strokeDashoffset: 0, duration: 0.6, stagger: 0.03, ease: "power1.inOut" });
+    reveal.to(allPaths, { opacity: 0.35, strokeDashoffset: 0, duration: 0.6, stagger: 0.03, ease: "power1.inOut" });
 
     /* Internal items */
     const items = svg.querySelectorAll(".engine-item");
-    reveal.fromTo(items, { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.02, ease: "power2.out" }, "-=0.3");
+    reveal.fromTo(items, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.02, ease: "power2.out" }, "-=0.3");
 
     /* Badges */
     const badges = svg.querySelectorAll(".badge-node");
-    reveal.fromTo(badges, { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.05 }, "-=0.2");
+    reveal.fromTo(badges, { opacity: 0, y: 5 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.05 }, "-=0.2");
 
     /* Labels */
     const labels = svg.querySelectorAll(".label-node");
@@ -235,12 +236,12 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
   }, [active]);
 
   return (
-    <SlideLayout className="justify-start pt-6">
-      <div ref={titleRef} className="mb-3 text-center opacity-0">
-        <h2 className="text-4xl font-extrabold tracking-tight" style={{ color: "var(--text-primary)" }}>
+    <SlideLayout className="justify-start pt-8">
+      <div ref={titleRef} className="mb-4 text-center opacity-0">
+        <h2 className="text-5xl font-extrabold tracking-tight" style={{ color: "var(--text-primary)" }}>
           Replay the Markets, Tick by Tick
         </h2>
-        <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
+        <p className="mt-2 text-base font-medium" style={{ color: "var(--text-muted)" }}>
           Same engine, same strategy, same AI agent — historical data in, simulated results out
         </p>
       </div>
@@ -249,46 +250,46 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
         ref={svgRef}
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className="w-full"
-        style={{ maxWidth: "1300px", maxHeight: "calc(100vh - 130px)" }}
+        style={{ maxWidth: "1560px", maxHeight: "calc(100vh - 156px)" }}
         preserveAspectRatio="xMidYMid meet"
       >
         <defs><StandardDefs /></defs>
         <rect width={VB_W} height={VB_H} fill="url(#dotgrid)" />
 
         {/* ═══════════ PATHS ═══════════ */}
-        <path d={pathS3ToSqlite()} className="ane-path path-s3-sqlite" fill="none" stroke="var(--accent-cyan)" strokeWidth={2} opacity={0.35} />
-        <path d={pathSqliteToDispatcher()} className="ane-path path-sqlite-disp" fill="none" stroke="var(--accent-cyan)" strokeWidth={2} opacity={0.35} />
-        <path d={pathDispatcherToEngine()} className="ane-path path-disp-engine" fill="none" stroke="var(--accent-cyan)" strokeWidth={2} opacity={0.35} />
-        <path d={pathEngineToReplayOms()} className="ane-path path-engine-oms" fill="none" stroke="var(--accent-purple)" strokeWidth={1.5} opacity={0.3} />
-        <path d={pathReplayOmsToEngine()} className="ret-path path-oms-engine" fill="none" stroke="var(--accent-green)" strokeWidth={1.2} opacity={0.25} strokeDasharray="6 4" />
+        <path d={pathS3ToSqlite()} className="ane-path path-s3-sqlite" fill="none" stroke="var(--accent-amber)" strokeWidth={2.4} opacity={0.4} />
+        <path d={pathSqliteToDispatcher()} className="ane-path path-sqlite-disp" fill="none" stroke="var(--accent-amber)" strokeWidth={2.4} opacity={0.4} />
+        <path d={pathDispatcherToEngine()} className="ane-path path-disp-engine" fill="none" stroke="var(--accent-amber)" strokeWidth={2.4} opacity={0.4} />
+        <path d={pathEngineToReplayOms()} className="ane-path path-engine-oms" fill="none" stroke="var(--accent-coral)" strokeWidth={1.8} opacity={0.35} />
+        <path d={pathReplayOmsToEngine()} className="ret-path path-oms-engine" fill="none" stroke="var(--accent-emerald)" strokeWidth={1.4} opacity={0.3} strokeDasharray="7 5" />
 
         {/* Agent/LLM paths — fully integrated */}
-        <path d={pathEngineToAgent()} className="slow-path path-engine-agent" fill="none" stroke="var(--accent-purple)" strokeWidth={1.5} opacity={0.25} />
-        <path d={pathAgentToLLM()} className="slow-path path-agent-llm" fill="none" stroke="var(--accent-purple)" strokeWidth={1.5} opacity={0.25} />
-        <path d={pathLLMToAgent()} className="slow-path path-llm-agent" fill="none" stroke="var(--accent-purple)" strokeWidth={1.2} opacity={0.2} strokeDasharray="6 4" />
+        <path d={pathEngineToAgent()} className="slow-path path-engine-agent" fill="none" stroke="var(--accent-coral)" strokeWidth={1.8} opacity={0.3} />
+        <path d={pathAgentToLLM()} className="slow-path path-agent-llm" fill="none" stroke="var(--accent-coral)" strokeWidth={1.8} opacity={0.3} />
+        <path d={pathLLMToAgent()} className="slow-path path-llm-agent" fill="none" stroke="var(--accent-coral)" strokeWidth={1.4} opacity={0.25} strokeDasharray="7 5" />
 
         {/* ═══════════ NODES ═══════════ */}
 
         {/* S3 */}
         <g className="ane-node" style={{ opacity: 0 }}>
-          <rect x={S3.cx - S3.w / 2} y={S3.cy - S3.h / 2} width={S3.w} height={S3.h} rx={12} fill="var(--bg-card)" stroke="var(--accent-orange)" strokeWidth={1.2} />
-          <text x={S3.cx} y={S3.cy - 6} textAnchor="middle" className="text-[13px] font-bold" fill="var(--text-primary)">S3</text>
-          <text x={S3.cx} y={S3.cy + 12} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">Historical Data</text>
+          <rect x={S3.cx - S3.w / 2} y={S3.cy - S3.h / 2} width={S3.w} height={S3.h} rx={14} fill="var(--bg-card)" stroke="var(--accent-orange)" strokeWidth={1.4} />
+          <text x={S3.cx} y={S3.cy - 7} textAnchor="middle" className="text-[16px] font-bold" fill="var(--text-primary)">S3</text>
+          <text x={S3.cx} y={S3.cy + 14} textAnchor="middle" className="text-[12px]" fill="var(--text-muted)">Historical Data</text>
         </g>
 
         {/* SQLite DB */}
         <g className="ane-node" style={{ opacity: 0 }}>
-          <rect x={SQLITE.cx - SQLITE.w / 2} y={SQLITE.cy - SQLITE.h / 2} width={SQLITE.w} height={SQLITE.h} rx={12} fill="var(--bg-card)" stroke="var(--accent-cyan)" strokeWidth={1.2} />
-          <text x={SQLITE.cx} y={SQLITE.cy - 6} textAnchor="middle" className="text-[13px] font-bold" fill="var(--text-primary)">SQLite DB</text>
-          <text x={SQLITE.cx} y={SQLITE.cy + 12} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">.db.zst archives</text>
+          <rect x={SQLITE.cx - SQLITE.w / 2} y={SQLITE.cy - SQLITE.h / 2} width={SQLITE.w} height={SQLITE.h} rx={14} fill="var(--bg-card)" stroke="var(--accent-amber)" strokeWidth={1.4} />
+          <text x={SQLITE.cx} y={SQLITE.cy - 7} textAnchor="middle" className="text-[16px] font-bold" fill="var(--text-primary)">SQLite DB</text>
+          <text x={SQLITE.cx} y={SQLITE.cy + 14} textAnchor="middle" className="text-[12px]" fill="var(--text-muted)">.db.zst archives</text>
         </g>
 
         {/* Backtesting Dispatcher */}
         <g className="ane-node" style={{ opacity: 0 }}>
-          <rect x={DISPATCHER.cx - DISPATCHER.w / 2} y={DISPATCHER.cy - DISPATCHER.h / 2} width={DISPATCHER.w} height={DISPATCHER.h} rx={12} fill="var(--bg-card)" stroke="var(--accent-cyan)" strokeWidth={1.5} />
-          <text x={DISPATCHER.cx} y={DISPATCHER.cy - 10} textAnchor="middle" className="text-[13px] font-bold" fill="var(--text-primary)">Backtesting</text>
-          <text x={DISPATCHER.cx} y={DISPATCHER.cy + 8} textAnchor="middle" className="text-[13px] font-bold" fill="var(--text-primary)">Dispatcher</text>
-          <text x={DISPATCHER.cx} y={DISPATCHER.cy + 26} textAnchor="middle" className="text-[9px]" fill="var(--text-muted)">chronological replay</text>
+          <rect x={DISPATCHER.cx - DISPATCHER.w / 2} y={DISPATCHER.cy - DISPATCHER.h / 2} width={DISPATCHER.w} height={DISPATCHER.h} rx={14} fill="var(--bg-card)" stroke="var(--accent-amber)" strokeWidth={1.8} />
+          <text x={DISPATCHER.cx} y={DISPATCHER.cy - 12} textAnchor="middle" className="text-[16px] font-bold" fill="var(--text-primary)">Backtesting</text>
+          <text x={DISPATCHER.cx} y={DISPATCHER.cy + 10} textAnchor="middle" className="text-[16px] font-bold" fill="var(--text-primary)">Dispatcher</text>
+          <text x={DISPATCHER.cx} y={DISPATCHER.cy + 31} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">chronological replay</text>
         </g>
 
         {/* Engine */}
@@ -300,91 +301,91 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
 
         {/* Simulated time clock overlay */}
         <g className="badge-node" style={{ opacity: 0 }}>
-          <rect x={CLOCK_CX - 50} y={CLOCK_CY - 14} width={100} height={28} rx={6} fill="var(--bg-card)" stroke="var(--accent-orange)" strokeWidth={1} />
-          <text x={CLOCK_CX - 20} y={CLOCK_CY + 4} textAnchor="middle" className="text-[9px]" fill="var(--text-muted)">Time:</text>
-          <text ref={clockRef} x={CLOCK_CX + 20} y={CLOCK_CY + 4} textAnchor="middle" className="text-[11px] font-bold" fill="var(--accent-orange)">09:15</text>
+          <rect x={CLOCK_CX - 60} y={CLOCK_CY - 17} width={120} height={34} rx={7} fill="var(--bg-card)" stroke="var(--accent-orange)" strokeWidth={1.2} />
+          <text x={CLOCK_CX - 24} y={CLOCK_CY + 5} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">Time:</text>
+          <text ref={clockRef} x={CLOCK_CX + 24} y={CLOCK_CY + 5} textAnchor="middle" className="text-[13px] font-bold" fill="var(--accent-orange)">09:15</text>
         </g>
 
         {/* "Same strategy code" badge inside engine area */}
         <g className="badge-node" style={{ opacity: 0 }}>
           <rect
-            x={ENGINE.cx - ENGINE.w / 2 + 8} y={ENGINE.cy + ENGINE.h / 2 - 18}
-            width={110} height={16} rx={3}
-            fill="color-mix(in srgb, var(--accent-green) 15%, transparent)"
-            stroke="var(--accent-green)" strokeWidth={0.5}
+            x={ENGINE.cx - ENGINE.w / 2 + 10} y={ENGINE.cy + ENGINE.h / 2 - 22}
+            width={132} height={19} rx={4}
+            fill="color-mix(in srgb, var(--accent-emerald) 18%, transparent)"
+            stroke="var(--accent-emerald)" strokeWidth={0.6}
           />
-          <text x={ENGINE.cx - ENGINE.w / 2 + 63} y={ENGINE.cy + ENGINE.h / 2 - 7} textAnchor="middle" className="text-[8px] font-medium" fill="var(--accent-green)">Same strategy code</text>
+          <text x={ENGINE.cx - ENGINE.w / 2 + 76} y={ENGINE.cy + ENGINE.h / 2 - 8} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-emerald)">Same strategy code</text>
         </g>
 
         {/* Replay OMS */}
         <g className="ane-node" style={{ opacity: 0 }}>
-          <rect x={REPLAY_OMS.cx - REPLAY_OMS.w / 2} y={REPLAY_OMS.cy - REPLAY_OMS.h / 2} width={REPLAY_OMS.w} height={REPLAY_OMS.h} rx={12} fill="var(--bg-card)" stroke="var(--accent-orange)" strokeWidth={1.2} />
-          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy - 8} textAnchor="middle" className="text-[13px] font-bold" fill="var(--text-primary)">Replay OMS</text>
-          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy + 10} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">slippage simulation</text>
-          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy + 24} textAnchor="middle" className="text-[9px]" fill="var(--accent-orange)" opacity={0.7}>simulated fills</text>
+          <rect x={REPLAY_OMS.cx - REPLAY_OMS.w / 2} y={REPLAY_OMS.cy - REPLAY_OMS.h / 2} width={REPLAY_OMS.w} height={REPLAY_OMS.h} rx={14} fill="var(--bg-card)" stroke="var(--accent-orange)" strokeWidth={1.4} />
+          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy - 10} textAnchor="middle" className="text-[16px] font-bold" fill="var(--text-primary)">Replay OMS</text>
+          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy + 12} textAnchor="middle" className="text-[12px]" fill="var(--text-muted)">slippage simulation</text>
+          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy + 29} textAnchor="middle" className="text-[11px]" fill="var(--accent-orange)" opacity={0.8}>simulated fills</text>
         </g>
 
         {/* AI Agent — Fully integrated in backtest */}
         <g className="ane-node" style={{ opacity: 0 }}>
-          <rect x={AGENT.cx - AGENT.w / 2} y={AGENT.cy - AGENT.h / 2} width={AGENT.w} height={AGENT.h} rx={12} fill="var(--bg-card)" stroke="var(--accent-purple)" strokeWidth={1.2} />
-          <text x={AGENT.cx} y={AGENT.cy - 20} textAnchor="middle" className="text-[13px] font-bold" fill="var(--accent-purple)">AI Agent</text>
-          <text x={AGENT.cx} y={AGENT.cy + 2} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">Same agent code</text>
-          <text x={AGENT.cx} y={AGENT.cy + 18} textAnchor="middle" className="text-[9px]" fill="var(--text-muted)">as live trading</text>
+          <rect x={AGENT.cx - AGENT.w / 2} y={AGENT.cy - AGENT.h / 2} width={AGENT.w} height={AGENT.h} rx={14} fill="var(--bg-card)" stroke="var(--accent-coral)" strokeWidth={1.4} />
+          <text x={AGENT.cx} y={AGENT.cy - 24} textAnchor="middle" className="text-[16px] font-bold" fill="var(--accent-coral)">AI Agent</text>
+          <text x={AGENT.cx} y={AGENT.cy + 2} textAnchor="middle" className="text-[12px]" fill="var(--text-muted)">Same agent code</text>
+          <text x={AGENT.cx} y={AGENT.cy + 22} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">as live trading</text>
         </g>
 
         {/* LLM — Fully integrated in backtest */}
         <g className="ane-node" style={{ opacity: 0 }}>
-          <rect x={LLM.cx - LLM.w / 2} y={LLM.cy - LLM.h / 2} width={LLM.w} height={LLM.h} rx={16} fill="var(--bg-card)" stroke="var(--accent-purple)" strokeWidth={1.2} />
-          <text x={LLM.cx} y={LLM.cy - 6} textAnchor="middle" className="text-[12px] font-bold" fill="var(--accent-purple)">LLM</text>
-          <text x={LLM.cx} y={LLM.cy + 12} textAnchor="middle" className="text-[9px]" fill="var(--text-muted)">Gemini / Claude</text>
+          <rect x={LLM.cx - LLM.w / 2} y={LLM.cy - LLM.h / 2} width={LLM.w} height={LLM.h} rx={19} fill="var(--bg-card)" stroke="var(--accent-coral)" strokeWidth={1.4} />
+          <text x={LLM.cx} y={LLM.cy - 7} textAnchor="middle" className="text-[14px] font-bold" fill="var(--accent-coral)">LLM</text>
+          <text x={LLM.cx} y={LLM.cy + 14} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">Gemini / Claude</text>
         </g>
 
         {/* Agent integration badge */}
         <g className="badge-node" style={{ opacity: 0 }}>
           <rect
-            x={AGENT.cx - 85} y={AGENT.cy + AGENT.h / 2 + 8}
-            width={170} height={18} rx={4}
-            fill="color-mix(in srgb, var(--accent-purple) 12%, transparent)"
-            stroke="var(--accent-purple)" strokeWidth={0.5}
+            x={AGENT.cx - 102} y={AGENT.cy + AGENT.h / 2 + 10}
+            width={204} height={22} rx={5}
+            fill="color-mix(in srgb, var(--accent-coral) 15%, transparent)"
+            stroke="var(--accent-coral)" strokeWidth={0.6}
           />
-          <text x={AGENT.cx} y={AGENT.cy + AGENT.h / 2 + 20} textAnchor="middle" className="text-[9px] font-medium" fill="var(--accent-purple)">AI Agent runs identically in backtest</text>
+          <text x={AGENT.cx} y={AGENT.cy + AGENT.h / 2 + 24} textAnchor="middle" className="text-[11px] font-semibold" fill="var(--accent-coral)">AI Agent runs identically in backtest</text>
         </g>
 
         {/* ═══════════ CALLOUTS ═══════════ */}
         <g className="label-node" style={{ opacity: 0 }}>
-          <rect x={DISPATCHER.cx - 65} y={DISPATCHER.cy + DISPATCHER.h / 2 + 10} width={130} height={22} rx={4} fill="color-mix(in srgb, var(--accent-cyan) 15%, transparent)" stroke="var(--accent-cyan)" strokeWidth={0.6} />
-          <text x={DISPATCHER.cx} y={DISPATCHER.cy + DISPATCHER.h / 2 + 25} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-cyan)">Simulated time</text>
+          <rect x={DISPATCHER.cx - 78} y={DISPATCHER.cy + DISPATCHER.h / 2 + 12} width={156} height={26} rx={5} fill="color-mix(in srgb, var(--accent-amber) 18%, transparent)" stroke="var(--accent-amber)" strokeWidth={0.8} />
+          <text x={DISPATCHER.cx} y={DISPATCHER.cy + DISPATCHER.h / 2 + 30} textAnchor="middle" className="text-[12px] font-semibold" fill="var(--accent-amber)">Simulated time</text>
         </g>
 
         <g className="label-node" style={{ opacity: 0 }}>
-          <rect x={REPLAY_OMS.cx - 55} y={REPLAY_OMS.cy + REPLAY_OMS.h / 2 + 10} width={110} height={22} rx={4} fill="color-mix(in srgb, var(--accent-orange) 15%, transparent)" stroke="var(--accent-orange)" strokeWidth={0.6} />
-          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy + REPLAY_OMS.h / 2 + 25} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-orange)">Slippage injection</text>
+          <rect x={REPLAY_OMS.cx - 66} y={REPLAY_OMS.cy + REPLAY_OMS.h / 2 + 12} width={132} height={26} rx={5} fill="color-mix(in srgb, var(--accent-orange) 18%, transparent)" stroke="var(--accent-orange)" strokeWidth={0.8} />
+          <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy + REPLAY_OMS.h / 2 + 30} textAnchor="middle" className="text-[12px] font-semibold" fill="var(--accent-orange)">Slippage injection</text>
         </g>
 
         {/* Path labels */}
-        <text x={(ENGINE.cx + ENGINE.w / 2 + REPLAY_OMS.cx - REPLAY_OMS.w / 2) / 2} y={REPLAY_OMS.cy - REPLAY_OMS.h / 2 - 8} textAnchor="middle" className="label-node text-[9px]" fill="var(--accent-purple)" opacity={0}>Orders</text>
-        <text x={(ENGINE.cx + ENGINE.w / 2 + REPLAY_OMS.cx - REPLAY_OMS.w / 2) / 2} y={ENGINE.cy + ENGINE.h / 2 + 22} textAnchor="middle" className="label-node text-[9px]" fill="var(--accent-green)" opacity={0}>Simulated Fills</text>
+        <text x={(ENGINE.cx + ENGINE.w / 2 + REPLAY_OMS.cx - REPLAY_OMS.w / 2) / 2} y={REPLAY_OMS.cy - REPLAY_OMS.h / 2 - 10} textAnchor="middle" className="label-node text-[11px] font-medium" fill="var(--accent-coral)" opacity={0}>Orders</text>
+        <text x={(ENGINE.cx + ENGINE.w / 2 + REPLAY_OMS.cx - REPLAY_OMS.w / 2) / 2} y={ENGINE.cy + ENGINE.h / 2 + 26} textAnchor="middle" className="label-node text-[11px] font-medium" fill="var(--accent-emerald)" opacity={0}>Simulated Fills</text>
 
         {/* Fast-forward indicator (top right) */}
         <g className="badge-node" style={{ opacity: 0 }}>
-          <rect x={VB_W - 150} y={30} width={120} height={28} rx={6} fill="color-mix(in srgb, var(--accent-cyan) 12%, transparent)" stroke="var(--accent-cyan)" strokeWidth={0.8} />
-          <text x={VB_W - 90} y={49} textAnchor="middle" className="text-[11px] font-bold" fill="var(--accent-cyan)">▶▶ Fast replay</text>
+          <rect x={VB_W - 180} y={36} width={144} height={34} rx={7} fill="color-mix(in srgb, var(--accent-amber) 15%, transparent)" stroke="var(--accent-amber)" strokeWidth={1} />
+          <text x={VB_W - 108} y={59} textAnchor="middle" className="text-[13px] font-bold" fill="var(--accent-amber)">▶▶ Fast replay</text>
         </g>
 
         {/* ═══════════ DOTS ═══════════ */}
-        <circle className="dot-s3-sqlite" r={5} fill="var(--accent-cyan)" opacity={0} filter="url(#glowCyan)" />
-        <circle className="dot-sqlite-disp" r={5} fill="var(--accent-cyan)" opacity={0} filter="url(#glowCyan)" />
-        <circle className="dot-disp-engine" r={5} fill="var(--accent-cyan)" opacity={0} filter="url(#glowCyan)" />
+        <circle className="dot-s3-sqlite" r={6} fill="var(--accent-amber)" opacity={0} filter="url(#glowAmber)" />
+        <circle className="dot-sqlite-disp" r={6} fill="var(--accent-amber)" opacity={0} filter="url(#glowAmber)" />
+        <circle className="dot-disp-engine" r={6} fill="var(--accent-amber)" opacity={0} filter="url(#glowAmber)" />
         {ENGINE_ITEMS.map((_, i) => (
-          <circle key={`id-${i}`} className={`int-dot-0-${i}`} r={3} fill="var(--accent-green)" opacity={0} filter="url(#glowGreen)" />
+          <circle key={`id-${i}`} className={`int-dot-0-${i}`} r={4} fill="var(--accent-emerald)" opacity={0} filter="url(#glowGreen)" />
         ))}
-        <circle className="dot-engine-oms" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
-        <circle className="dot-oms-engine" r={4} fill="var(--accent-green)" opacity={0} filter="url(#glowGreen)" />
+        <circle className="dot-engine-oms" r={5} fill="var(--accent-coral)" opacity={0} filter="url(#glowCoral)" />
+        <circle className="dot-oms-engine" r={5} fill="var(--accent-emerald)" opacity={0} filter="url(#glowGreen)" />
         
         {/* Agent/LLM dots */}
-        <circle className="dot-engine-agent" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
-        <circle className="dot-agent-llm" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
-        <circle className="dot-llm-agent" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
+        <circle className="dot-engine-agent" r={5} fill="var(--accent-coral)" opacity={0} filter="url(#glowCoral)" />
+        <circle className="dot-agent-llm" r={5} fill="var(--accent-coral)" opacity={0} filter="url(#glowCoral)" />
+        <circle className="dot-llm-agent" r={5} fill="var(--accent-coral)" opacity={0} filter="url(#glowCoral)" />
       </svg>
     </SlideLayout>
   );

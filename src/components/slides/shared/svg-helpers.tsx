@@ -1,33 +1,34 @@
 /* ────────────────────────────────────────────────────────────
  *  Reusable SVG helper components for slide diagrams
+ *  Warm Industrial aesthetic - amber/orange/coral palette
  * ──────────────────────────────────────────────────────────── */
 
-/** Very subtle dot-grid background pattern for minimalist aesthetic */
+/** Subtle dot-grid background pattern with warm tone */
 export function DotGrid({ id = "dotgrid" }: { id?: string }) {
   return (
     <pattern
       id={id}
       x="0"
       y="0"
-      width="32"
-      height="32"
+      width="38"
+      height="38"
       patternUnits="userSpaceOnUse"
     >
       <circle
-        cx="16"
-        cy="16"
-        r="0.5"
+        cx="19"
+        cy="19"
+        r="0.6"
         fill="var(--text-muted)"
-        opacity="0.06"
+        opacity="0.08"
       />
     </pattern>
   );
 }
 
-/** Refined soft glow filter for minimalist aesthetic */
+/** Warm glow filter with enhanced visibility */
 export function GlowFilter({
   id,
-  stdDev = 3,
+  stdDev = 3.5,
 }: {
   id: string;
   stdDev?: number;
@@ -43,16 +44,17 @@ export function GlowFilter({
   );
 }
 
-/** Standard set of refined glow filter defs used across slides */
+/** Standard set of warm glow filter defs - NO blue/purple */
 export function StandardDefs({ dotGridId = "dotgrid" }: { dotGridId?: string }) {
   return (
     <>
       <DotGrid id={dotGridId} />
-      <GlowFilter id="glowRed" stdDev={2.5} />
-      <GlowFilter id="glowCyan" stdDev={3} />
-      <GlowFilter id="glowGreen" stdDev={2.5} />
-      <GlowFilter id="glowPurple" stdDev={2.5} />
-      <GlowFilter id="glowOrange" stdDev={2.5} />
+      <GlowFilter id="glowRed" stdDev={3} />
+      <GlowFilter id="glowAmber" stdDev={3.5} />
+      <GlowFilter id="glowGold" stdDev={3.5} />
+      <GlowFilter id="glowOrange" stdDev={3} />
+      <GlowFilter id="glowCoral" stdDev={3} />
+      <GlowFilter id="glowGreen" stdDev={3} />
     </>
   );
 }

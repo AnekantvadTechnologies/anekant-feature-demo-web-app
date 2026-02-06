@@ -10,6 +10,7 @@ import {
 
 /* ────────────────────────────────────────────────────────────
  *  Reusable engine box SVG component
+ *  Warm Industrial aesthetic - scaled 20% larger
  *
  *  Renders an engine rectangle with:
  *    - Label in top-left corner
@@ -34,7 +35,7 @@ export interface EngineBoxProps {
   engineIdx: number;
   /** Optional extra badge text shown below the label (e.g. "Same engine code") */
   badge?: string;
-  /** Stroke color for the outer box (defaults to --accent-cyan) */
+  /** Stroke color for the outer box (defaults to --accent-amber) */
   strokeColor?: string;
 }
 
@@ -46,7 +47,7 @@ export function EngineBox({
   label,
   engineIdx,
   badge,
-  strokeColor = "var(--accent-cyan)",
+  strokeColor = "var(--accent-amber)",
 }: EngineBoxProps) {
   return (
     <g className="ane-node" style={{ opacity: 0 }}>
@@ -56,17 +57,17 @@ export function EngineBox({
         y={cy - h / 2}
         width={w}
         height={h}
-        rx={14}
+        rx={17}
         fill="var(--bg-card)"
         stroke={strokeColor}
-        strokeWidth={1.5}
+        strokeWidth={1.8}
       />
 
-      {/* Engine label (top-left) */}
+      {/* Engine label (top-left) - scaled */}
       <text
-        x={cx - w / 2 + 18}
-        y={cy - h / 2 + 22}
-        className="text-[13px] font-bold"
+        x={cx - w / 2 + 22}
+        y={cy - h / 2 + 26}
+        className="text-[16px] font-bold"
         fill={strokeColor}
       >
         {label}
@@ -75,11 +76,11 @@ export function EngineBox({
       {/* Optional badge (below label) */}
       {badge && (
         <text
-          x={cx - w / 2 + 18}
-          y={cy - h / 2 + 38}
-          className="text-[9px] font-medium"
-          fill="var(--accent-green)"
-          opacity={0.7}
+          x={cx - w / 2 + 22}
+          y={cy - h / 2 + 46}
+          className="text-[11px] font-medium"
+          fill="var(--accent-emerald)"
+          opacity={0.8}
         >
           {badge}
         </text>
@@ -89,9 +90,9 @@ export function EngineBox({
       <circle
         cx={cx - w / 2}
         cy={cy}
-        r={4}
+        r={5}
         fill={strokeColor}
-        opacity={0.3}
+        opacity={0.4}
       />
 
       {/* Internal items */}
@@ -109,18 +110,18 @@ export function EngineBox({
               y={iy - ITEM_H / 2}
               width={ITEM_W}
               height={ITEM_H}
-              rx={6}
+              rx={7}
               fill="var(--bg-secondary)"
-              stroke="var(--accent-green)"
-              strokeWidth={0.8}
-              opacity={0.6}
+              stroke="var(--accent-emerald)"
+              strokeWidth={1}
+              opacity={0.7}
             />
             <text
               x={ix}
-              y={iy + 4}
+              y={iy + 5}
               textAnchor="middle"
-              className="text-[11px] font-medium"
-              fill="var(--accent-green)"
+              className="text-[13px] font-semibold"
+              fill="var(--accent-emerald)"
             >
               {itemLabel}
             </text>
@@ -128,19 +129,19 @@ export function EngineBox({
             {/* Checkmark (animated by GSAP loop externally) */}
             <g className="engine-check" style={{ opacity: 0 }}>
               <circle
-                cx={ix + ITEM_W / 2 + 14}
+                cx={ix + ITEM_W / 2 + 17}
                 cy={iy}
-                r={8}
-                fill="color-mix(in srgb, var(--accent-green) 15%, transparent)"
-                stroke="var(--accent-green)"
-                strokeWidth={0.8}
+                r={10}
+                fill="color-mix(in srgb, var(--accent-emerald) 18%, transparent)"
+                stroke="var(--accent-emerald)"
+                strokeWidth={1}
               />
               <text
-                x={ix + ITEM_W / 2 + 14}
-                y={iy + 4}
+                x={ix + ITEM_W / 2 + 17}
+                y={iy + 5}
                 textAnchor="middle"
-                className="text-[10px] font-bold"
-                fill="var(--accent-green)"
+                className="text-[12px] font-bold"
+                fill="var(--accent-emerald)"
               >
                 ✓
               </text>
@@ -151,7 +152,7 @@ export function EngineBox({
 
       {/* Internal fan-out paths (entry → each item) */}
       {ENGINE_ITEMS.map((_, iIdx) => {
-        const x1 = cx - w / 2 + 20;
+        const x1 = cx - w / 2 + 24;
         const y1 = cy;
         const x2 = itemX(cx) - ITEM_W / 2;
         const y2 = itemY(cy, h, iIdx);
@@ -161,9 +162,9 @@ export function EngineBox({
             d={bezierH(x1, y1, x2, y2)}
             className={`int-path int-path-${engineIdx}-${iIdx}`}
             fill="none"
-            stroke="var(--accent-cyan)"
-            strokeWidth={1}
-            opacity={0.2}
+            stroke="var(--accent-amber)"
+            strokeWidth={1.2}
+            opacity={0.25}
           />
         );
       })}
