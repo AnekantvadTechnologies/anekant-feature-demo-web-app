@@ -21,28 +21,28 @@ interface BacktestingFlowSlideProps {
 }
 
 /* ────────────────────────────────────────────────────────────
- *  Layout constants
+ *  Layout constants — AI Agent fully integrated in backtest
  * ──────────────────────────────────────────────────────────── */
-const S3 = { cx: 80, cy: 320, w: 120, h: 64 };
-const SQLITE = { cx: 260, cy: 320, w: 130, h: 64 };
-const DISPATCHER = { cx: 470, cy: 320, w: 170, h: 80 };
+const S3 = { cx: 80, cy: 300, w: 110, h: 58 };
+const SQLITE = { cx: 240, cy: 300, w: 120, h: 58 };
+const DISPATCHER = { cx: 420, cy: 300, w: 155, h: 72 };
 
-const ENGINE_W = 260;
-const ENGINE_H = 180;
-const ENGINE = { cx: 730, cy: 320, w: ENGINE_W, h: ENGINE_H };
+const ENGINE_W = 240;
+const ENGINE_H = 170;
+const ENGINE = { cx: 660, cy: 300, w: ENGINE_W, h: ENGINE_H };
 
-const REPLAY_OMS = { cx: 1040, cy: 320, w: 150, h: 80 };
+const REPLAY_OMS = { cx: 950, cy: 300, w: 140, h: 72 };
 
 /* Clock overlay position (over the engine) */
 const CLOCK_CX = ENGINE.cx + ENGINE.w / 2 - 30;
 const CLOCK_CY = ENGINE.cy - ENGINE.h / 2 - 20;
 
-/* Ghosted LLM path nodes (dimmed) */
-const GHOST_AGENT = { cx: 850, cy: 560, w: 150, h: 50 };
-const GHOST_LLM = { cx: 1080, cy: 560, w: 120, h: 50 };
+/* AI Agent and LLM — Full integration, not ghosted */
+const AGENT = { cx: 820, cy: 540, w: 160, h: 110 };
+const LLM = { cx: 1040, cy: 540, w: 120, h: 70 };
 
 /* ────────────────────────────────────────────────────────────
- *  Path builders
+ *  Path builders — Including full Agent/LLM integration
  * ──────────────────────────────────────────────────────────── */
 const pathS3ToSqlite = () =>
   bezierH(S3.cx + S3.w / 2, S3.cy, SQLITE.cx - SQLITE.w / 2, SQLITE.cy);
@@ -58,24 +58,33 @@ const pathEngineToReplayOms = () =>
 
 const pathReplayOmsToEngine = (): string => {
   const x1 = REPLAY_OMS.cx - REPLAY_OMS.w / 2;
-  const y1 = REPLAY_OMS.cy + 25;
+  const y1 = REPLAY_OMS.cy + 22;
   const x2 = ENGINE.cx + ENGINE.w / 2;
-  const y2 = ENGINE.cy + 30;
+  const y2 = ENGINE.cy + 25;
   const cpx = (x1 + x2) / 2;
-  return `M ${x1} ${y1} C ${cpx} ${y1 + 40}, ${cpx} ${y2 + 40}, ${x2} ${y2}`;
+  return `M ${x1} ${y1} C ${cpx} ${y1 + 35}, ${cpx} ${y2 + 35}, ${x2} ${y2}`;
 };
 
-/* Ghost paths for optional LLM integration */
-const pathEngineToGhostAgent = (): string => {
-  const x1 = ENGINE.cx;
+/* Agent integration paths — full visibility */
+const pathEngineToAgent = (): string => {
+  const x1 = ENGINE.cx + 30;
   const y1 = ENGINE.cy + ENGINE.h / 2;
-  const x2 = GHOST_AGENT.cx - GHOST_AGENT.w / 2;
-  const y2 = GHOST_AGENT.cy;
-  return bezierH(x1, y1, x2, y2);
+  const x2 = AGENT.cx - AGENT.w / 2;
+  const y2 = AGENT.cy - 20;
+  return `M ${x1} ${y1} C ${x1} ${y1 + 50}, ${x2 - 40} ${y2}, ${x2} ${y2}`;
 };
 
-const pathGhostAgentToLLM = () =>
-  bezierH(GHOST_AGENT.cx + GHOST_AGENT.w / 2, GHOST_AGENT.cy, GHOST_LLM.cx - GHOST_LLM.w / 2, GHOST_LLM.cy);
+const pathAgentToLLM = () =>
+  bezierH(AGENT.cx + AGENT.w / 2, AGENT.cy, LLM.cx - LLM.w / 2, LLM.cy);
+
+const pathLLMToAgent = (): string => {
+  const x1 = LLM.cx - LLM.w / 2;
+  const y1 = LLM.cy + 20;
+  const x2 = AGENT.cx + AGENT.w / 2;
+  const y2 = AGENT.cy + 20;
+  const cpx = (x1 + x2) / 2;
+  return `M ${x1} ${y1} C ${cpx} ${y1 + 25}, ${cpx} ${y2 + 25}, ${x2} ${y2}`;
+};
 
 /* Engine internal fan-out */
 function engineInternalPath(itemIdx: number): string {
@@ -109,44 +118,47 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
     revealTlRef.current?.kill();
     loopTlRef.current?.kill();
 
-    /* ──────── REVEAL ──────── */
+    /* ──────── REVEAL (refined, subtle animations) ──────── */
     const reveal = gsap.timeline();
     revealTlRef.current = reveal;
 
-    reveal.fromTo(titleRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" });
-
-    const nodes = svg.querySelectorAll(".ane-node");
-    reveal.fromTo(nodes, { opacity: 0, scale: 0.85, transformOrigin: "center center" }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.04, ease: "back.out(1.3)" }, "-=0.2");
-
-    const ghostNodes = svg.querySelectorAll(".ghost-node");
-    reveal.fromTo(ghostNodes, { opacity: 0 }, { opacity: 0.25, duration: 0.5, stagger: 0.05 }, "-=0.1");
-
-    const allPaths = svg.querySelectorAll<SVGPathElement>(".ane-path, .int-path, .ret-path");
+    /* Set ALL paths invisible initially (fixes lines-before-boxes issue) */
+    const allPaths = svg.querySelectorAll<SVGPathElement>(".ane-path, .int-path, .ret-path, .slow-path");
     allPaths.forEach((p) => {
       const len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
+      gsap.set(p, { opacity: 0, strokeDasharray: len, strokeDashoffset: len });
     });
-    reveal.to(allPaths, { strokeDashoffset: 0, duration: 0.6, stagger: 0.03, ease: "power2.inOut" });
 
-    const ghostPaths = svg.querySelectorAll<SVGPathElement>(".ghost-path");
-    ghostPaths.forEach((p) => {
-      const len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
-    });
-    reveal.to(ghostPaths, { strokeDashoffset: 0, duration: 0.5, stagger: 0.05, ease: "power2.inOut" }, "-=0.3");
+    /* Title */
+    reveal.fromTo(titleRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" });
 
+    /* Nodes (boxes first) */
+    const nodes = svg.querySelectorAll(".ane-node");
+    reveal.fromTo(nodes, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out" }, "-=0.2");
+
+    /* Paths (after nodes, with opacity) */
+    reveal.to(allPaths, { opacity: 0.3, strokeDashoffset: 0, duration: 0.6, stagger: 0.03, ease: "power1.inOut" });
+
+    /* Internal items */
     const items = svg.querySelectorAll(".engine-item");
-    reveal.fromTo(items, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.02, ease: "power2.out" }, "-=0.3");
+    reveal.fromTo(items, { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.02, ease: "power2.out" }, "-=0.3");
 
+    /* Badges */
     const badges = svg.querySelectorAll(".badge-node");
-    reveal.fromTo(badges, { opacity: 0, y: 5 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.06 }, "-=0.2");
+    reveal.fromTo(badges, { opacity: 0, y: 4 }, { opacity: 1, y: 0, duration: 0.35, stagger: 0.05 }, "-=0.2");
 
+    /* Labels */
     const labels = svg.querySelectorAll(".label-node");
     reveal.fromTo(labels, { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: 0.04 }, "-=0.1");
 
-    /* ──────── LOOPING FLOW (fast-forward feel) ──────── */
-    const loop = gsap.timeline({ repeat: -1, repeatDelay: 0.15, delay: 0.5 });
+    /* ──────── LOOPING FLOW (fast-forward feel, starts after reveal) ──────── */
+    const loop = gsap.timeline({ repeat: -1, repeatDelay: 0.15, paused: true });
     loopTlRef.current = loop;
+
+    /* Start loop only after reveal finishes */
+    reveal.eventCallback("onComplete", () => {
+      loop.play();
+    });
 
     /* S3 → SQLite */
     const p1 = svg.querySelector<SVGPathElement>(".path-s3-sqlite");
@@ -170,10 +182,10 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
       if (p && d) animateDot(d, p, loop, 0.2, 0.45 + i * 0.02);
     }
 
-    /* Checkmarks */
+    /* Checkmarks - subtle */
     const checks = svg.querySelectorAll<SVGElement>(".engine-check");
-    loop.fromTo(checks, { opacity: 0, scale: 0, transformOrigin: "center center" }, { opacity: 1, scale: 1, duration: 0.15, stagger: 0.02, ease: "back.out(2)" }, 0.55);
-    loop.to(checks, { opacity: 0, duration: 0.15 }, "+=0.2");
+    loop.fromTo(checks, { opacity: 0, scale: 0.8, transformOrigin: "center center" }, { opacity: 1, scale: 1, duration: 0.15, stagger: 0.03, ease: "power2.out" }, 0.55);
+    loop.to(checks, { opacity: 0, duration: 0.15 }, "+=0.15");
 
     /* Engine → Replay OMS */
     const p4 = svg.querySelector<SVGPathElement>(".path-engine-oms");
@@ -184,6 +196,21 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
     const p5 = svg.querySelector<SVGPathElement>(".path-oms-engine");
     const d5 = svg.querySelector<SVGCircleElement>(".dot-oms-engine");
     if (p5 && d5) animateDotReverse(d5, p5, loop, 0.2, 0.95);
+
+    /* Engine → Agent (integrated AI flow) */
+    const pEngAgent = svg.querySelector<SVGPathElement>(".path-engine-agent");
+    const dEngAgent = svg.querySelector<SVGCircleElement>(".dot-engine-agent");
+    if (pEngAgent && dEngAgent) animateDot(dEngAgent, pEngAgent, loop, 0.25, 0.8);
+
+    /* Agent → LLM */
+    const pAgentLlm = svg.querySelector<SVGPathElement>(".path-agent-llm");
+    const dAgentLlm = svg.querySelector<SVGCircleElement>(".dot-agent-llm");
+    if (pAgentLlm && dAgentLlm) animateDot(dAgentLlm, pAgentLlm, loop, 0.2, 1.0);
+
+    /* LLM → Agent (response back) */
+    const pLlmAgent = svg.querySelector<SVGPathElement>(".path-llm-agent");
+    const dLlmAgent = svg.querySelector<SVGCircleElement>(".dot-llm-agent");
+    if (pLlmAgent && dLlmAgent) animateDot(dLlmAgent, pLlmAgent, loop, 0.2, 1.25);
 
     /* Clock time advance */
     const clockEl = clockRef.current;
@@ -199,7 +226,7 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
       }, 0.5);
     }
 
-    loop.to({}, { duration: 0.15 }); // pad
+    loop.to({}, { duration: 0.2 }); // pad
 
     return () => {
       reveal.kill();
@@ -214,7 +241,7 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
           Replay the Markets, Tick by Tick
         </h2>
         <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
-          Same engine code, same strategy code — historical data in, simulated results out
+          Same engine, same strategy, same AI agent — historical data in, simulated results out
         </p>
       </div>
 
@@ -235,9 +262,10 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
         <path d={pathEngineToReplayOms()} className="ane-path path-engine-oms" fill="none" stroke="var(--accent-purple)" strokeWidth={1.5} opacity={0.3} />
         <path d={pathReplayOmsToEngine()} className="ret-path path-oms-engine" fill="none" stroke="var(--accent-green)" strokeWidth={1.2} opacity={0.25} strokeDasharray="6 4" />
 
-        {/* Ghost paths */}
-        <path d={pathEngineToGhostAgent()} className="ghost-path" fill="none" stroke="var(--accent-purple)" strokeWidth={1} opacity={0.12} strokeDasharray="4 4" />
-        <path d={pathGhostAgentToLLM()} className="ghost-path" fill="none" stroke="var(--accent-purple)" strokeWidth={1} opacity={0.12} strokeDasharray="4 4" />
+        {/* Agent/LLM paths — fully integrated */}
+        <path d={pathEngineToAgent()} className="slow-path path-engine-agent" fill="none" stroke="var(--accent-purple)" strokeWidth={1.5} opacity={0.25} />
+        <path d={pathAgentToLLM()} className="slow-path path-agent-llm" fill="none" stroke="var(--accent-purple)" strokeWidth={1.5} opacity={0.25} />
+        <path d={pathLLMToAgent()} className="slow-path path-llm-agent" fill="none" stroke="var(--accent-purple)" strokeWidth={1.2} opacity={0.2} strokeDasharray="6 4" />
 
         {/* ═══════════ NODES ═══════════ */}
 
@@ -296,22 +324,31 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
           <text x={REPLAY_OMS.cx} y={REPLAY_OMS.cy + 24} textAnchor="middle" className="text-[9px]" fill="var(--accent-orange)" opacity={0.7}>simulated fills</text>
         </g>
 
-        {/* Ghosted AI Agent */}
-        <g className="ghost-node" style={{ opacity: 0 }}>
-          <rect x={GHOST_AGENT.cx - GHOST_AGENT.w / 2} y={GHOST_AGENT.cy - GHOST_AGENT.h / 2} width={GHOST_AGENT.w} height={GHOST_AGENT.h} rx={10} fill="var(--bg-card)" stroke="var(--accent-purple)" strokeWidth={0.8} />
-          <text x={GHOST_AGENT.cx} y={GHOST_AGENT.cy + 4} textAnchor="middle" className="text-[11px] font-medium" fill="var(--accent-purple)">AI Agent</text>
+        {/* AI Agent — Fully integrated in backtest */}
+        <g className="ane-node" style={{ opacity: 0 }}>
+          <rect x={AGENT.cx - AGENT.w / 2} y={AGENT.cy - AGENT.h / 2} width={AGENT.w} height={AGENT.h} rx={12} fill="var(--bg-card)" stroke="var(--accent-purple)" strokeWidth={1.2} />
+          <text x={AGENT.cx} y={AGENT.cy - 20} textAnchor="middle" className="text-[13px] font-bold" fill="var(--accent-purple)">AI Agent</text>
+          <text x={AGENT.cx} y={AGENT.cy + 2} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">Same agent code</text>
+          <text x={AGENT.cx} y={AGENT.cy + 18} textAnchor="middle" className="text-[9px]" fill="var(--text-muted)">as live trading</text>
         </g>
 
-        {/* Ghosted LLM */}
-        <g className="ghost-node" style={{ opacity: 0 }}>
-          <rect x={GHOST_LLM.cx - GHOST_LLM.w / 2} y={GHOST_LLM.cy - GHOST_LLM.h / 2} width={GHOST_LLM.w} height={GHOST_LLM.h} rx={16} fill="var(--bg-card)" stroke="var(--accent-purple)" strokeWidth={0.8} />
-          <text x={GHOST_LLM.cx} y={GHOST_LLM.cy + 4} textAnchor="middle" className="text-[11px] font-medium" fill="var(--accent-purple)">LLM</text>
+        {/* LLM — Fully integrated in backtest */}
+        <g className="ane-node" style={{ opacity: 0 }}>
+          <rect x={LLM.cx - LLM.w / 2} y={LLM.cy - LLM.h / 2} width={LLM.w} height={LLM.h} rx={16} fill="var(--bg-card)" stroke="var(--accent-purple)" strokeWidth={1.2} />
+          <text x={LLM.cx} y={LLM.cy - 6} textAnchor="middle" className="text-[12px] font-bold" fill="var(--accent-purple)">LLM</text>
+          <text x={LLM.cx} y={LLM.cy + 12} textAnchor="middle" className="text-[9px]" fill="var(--text-muted)">Gemini / Claude</text>
         </g>
 
-        {/* Ghost label */}
-        <text x={(GHOST_AGENT.cx + GHOST_LLM.cx) / 2} y={GHOST_AGENT.cy + GHOST_AGENT.h / 2 + 20} textAnchor="middle" className="ghost-node text-[9px] italic" fill="var(--accent-purple)" opacity={0}>
-          Optional: plug in LLM the same way as live
-        </text>
+        {/* Agent integration badge */}
+        <g className="badge-node" style={{ opacity: 0 }}>
+          <rect
+            x={AGENT.cx - 85} y={AGENT.cy + AGENT.h / 2 + 8}
+            width={170} height={18} rx={4}
+            fill="color-mix(in srgb, var(--accent-purple) 12%, transparent)"
+            stroke="var(--accent-purple)" strokeWidth={0.5}
+          />
+          <text x={AGENT.cx} y={AGENT.cy + AGENT.h / 2 + 20} textAnchor="middle" className="text-[9px] font-medium" fill="var(--accent-purple)">AI Agent runs identically in backtest</text>
+        </g>
 
         {/* ═══════════ CALLOUTS ═══════════ */}
         <g className="label-node" style={{ opacity: 0 }}>
@@ -343,6 +380,11 @@ export function BacktestingFlowSlide({ active }: BacktestingFlowSlideProps) {
         ))}
         <circle className="dot-engine-oms" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
         <circle className="dot-oms-engine" r={4} fill="var(--accent-green)" opacity={0} filter="url(#glowGreen)" />
+        
+        {/* Agent/LLM dots */}
+        <circle className="dot-engine-agent" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
+        <circle className="dot-agent-llm" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
+        <circle className="dot-llm-agent" r={4} fill="var(--accent-purple)" opacity={0} filter="url(#glowPurple)" />
       </svg>
     </SlideLayout>
   );

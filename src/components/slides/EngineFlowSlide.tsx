@@ -132,96 +132,104 @@ export function EngineFlowSlide({ active }: EngineFlowSlideProps) {
     revealTlRef.current?.kill();
     loopTlRef.current?.kill();
 
-    /* ──────── REVEAL TIMELINE ──────── */
+    /* ──────── REVEAL TIMELINE (refined, subtle animations) ──────── */
     const reveal = gsap.timeline();
     revealTlRef.current = reveal;
 
+    /* Set ALL paths invisible initially (fixes lines-before-boxes issue) */
+    const tradPaths = svg.querySelectorAll<SVGPathElement>(".trad-path");
+    const anePaths = svg.querySelectorAll<SVGPathElement>(".ane-path");
+    const intPaths = svg.querySelectorAll<SVGPathElement>(".int-path");
+    const retPaths = svg.querySelectorAll<SVGPathElement>(".ret-path");
+    
+    [tradPaths, anePaths, intPaths, retPaths].forEach(paths => {
+      paths.forEach((p) => {
+        const len = p.getTotalLength();
+        gsap.set(p, { opacity: 0, strokeDasharray: len, strokeDashoffset: len });
+      });
+    });
+
+    /* Title reveal */
     reveal.fromTo(
       titleRef.current,
-      { y: 20, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+      { y: 12, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" },
     );
 
+    /* Row labels */
     const rowLabels = svg.querySelectorAll(".row-label");
     reveal.fromTo(
       rowLabels,
-      { opacity: 0, x: -15 },
-      { opacity: 1, x: 0, duration: 0.4, stagger: 0.15, ease: "power2.out" },
+      { opacity: 0, x: -10 },
+      { opacity: 1, x: 0, duration: 0.4, stagger: 0.12, ease: "power2.out" },
       "-=0.2",
     );
 
+    /* Traditional nodes (boxes first, then lines) */
     const tradNodes = svg.querySelectorAll(".trad-node");
     reveal.fromTo(
       tradNodes,
-      { opacity: 0, scale: 0.8, transformOrigin: "center center" },
-      { opacity: 1, scale: 1, duration: 0.35, stagger: 0.06, ease: "back.out(1.3)" },
+      { opacity: 0, y: 8 },
+      { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" },
       "-=0.15",
     );
 
-    const tradPaths = svg.querySelectorAll<SVGPathElement>(".trad-path");
-    tradPaths.forEach((p) => {
-      const len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
-    });
-    reveal.to(tradPaths, { strokeDashoffset: 0, duration: 0.5, stagger: 0.05, ease: "power2.inOut" });
+    /* Traditional paths (after nodes) */
+    reveal.to(tradPaths, { opacity: 0.3, strokeDashoffset: 0, duration: 0.5, stagger: 0.04, ease: "power1.inOut" });
 
+    /* Missed marks */
     const missed = svg.querySelectorAll(".missed-mark");
     reveal.fromTo(
       missed,
-      { opacity: 0, scale: 0 },
-      { opacity: 1, scale: 1, duration: 0.3, stagger: 0.08, transformOrigin: "center center", ease: "back.out(2)" },
-      "-=0.2",
+      { opacity: 0, scale: 0.8 },
+      { opacity: 1, scale: 1, duration: 0.25, stagger: 0.06, transformOrigin: "center center", ease: "power2.out" },
+      "-=0.15",
     );
 
+    /* Traditional extras */
     const tradExtra = svg.querySelectorAll(".trad-extra");
     reveal.fromTo(
       tradExtra,
       { opacity: 0 },
-      { opacity: 1, duration: 0.4, stagger: 0.05 },
+      { opacity: 1, duration: 0.35, stagger: 0.04 },
       "-=0.1",
     );
 
+    /* Anekant nodes (boxes first) */
     const aneNodes = svg.querySelectorAll(".ane-node");
     reveal.fromTo(
       aneNodes,
-      { opacity: 0, scale: 0.8, transformOrigin: "center center" },
-      { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05, ease: "back.out(1.3)" },
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out" },
       "-=0.1",
     );
 
-    const anePaths = svg.querySelectorAll<SVGPathElement>(".ane-path");
-    anePaths.forEach((p) => {
-      const len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
-    });
-    reveal.to(anePaths, { strokeDashoffset: 0, duration: 0.6, stagger: 0.03, ease: "power2.inOut" });
+    /* Anekant paths (after nodes) */
+    reveal.to(anePaths, { opacity: 0.35, strokeDashoffset: 0, duration: 0.6, stagger: 0.03, ease: "power1.inOut" });
 
+    /* Engine internal items */
     const internalItems = svg.querySelectorAll(".engine-item");
     reveal.fromTo(
       internalItems,
-      { opacity: 0, x: -8 },
+      { opacity: 0, x: -6 },
       { opacity: 1, x: 0, duration: 0.3, stagger: 0.02, ease: "power2.out" },
       "-=0.3",
     );
 
-    const intPaths = svg.querySelectorAll<SVGPathElement>(".int-path");
-    intPaths.forEach((p) => {
-      const len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
-    });
-    reveal.to(intPaths, { strokeDashoffset: 0, duration: 0.4, stagger: 0.02, ease: "power2.inOut" });
+    /* Internal paths */
+    reveal.to(intPaths, { opacity: 0.3, strokeDashoffset: 0, duration: 0.4, stagger: 0.02, ease: "power1.inOut" });
 
-    /* Return paths draw-on */
-    const retPaths = svg.querySelectorAll<SVGPathElement>(".ret-path");
-    retPaths.forEach((p) => {
-      const len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
-    });
-    reveal.to(retPaths, { strokeDashoffset: 0, duration: 0.5, stagger: 0.04, ease: "power2.inOut" });
+    /* Return paths */
+    reveal.to(retPaths, { opacity: 0.25, strokeDashoffset: 0, duration: 0.5, stagger: 0.04, ease: "power1.inOut" });
 
-    /* ──────── LOOPING DOT TIMELINE ──────── */
-    const loop = gsap.timeline({ repeat: -1, repeatDelay: 0.3, delay: 0.4 });
+    /* ──────── LOOPING DOT TIMELINE (starts after reveal completes) ──────── */
+    const loop = gsap.timeline({ repeat: -1, repeatDelay: 0.3, paused: true });
     loopTlRef.current = loop;
+
+    /* Start loop only after reveal finishes */
+    reveal.eventCallback("onComplete", () => {
+      loop.play();
+    });
 
     /* — Traditional: slow crawl — */
     const tradDot = svg.querySelector<SVGCircleElement>(".trad-dot");
@@ -259,15 +267,15 @@ export function EngineFlowSlide({ active }: EngineFlowSlideProps) {
       }
     }
 
-    /* Checkmarks flash */
+    /* Checkmarks - subtle fade with scale */
     const checks = svg.querySelectorAll<SVGElement>(".engine-check");
     loop.fromTo(
       checks,
-      { opacity: 0, scale: 0, transformOrigin: "center center" },
-      { opacity: 1, scale: 1, duration: 0.25, stagger: 0.02, ease: "back.out(2)" },
+      { opacity: 0, scale: 0.8, transformOrigin: "center center" },
+      { opacity: 1, scale: 1, duration: 0.2, stagger: 0.03, ease: "power2.out" },
       0.95,
     );
-    loop.to(checks, { opacity: 0, duration: 0.3 }, "+=0.4");
+    loop.to(checks, { opacity: 0, duration: 0.25 }, "+=0.35");
 
     /* Wave 4: Engines → Broker (orders out) */
     for (let i = 0; i < 3; i++) {

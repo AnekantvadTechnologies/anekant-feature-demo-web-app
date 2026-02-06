@@ -2,8 +2,7 @@ import gsap from "gsap";
 
 /**
  * Animate a dot element along an SVG path within a GSAP timeline.
- *
- * The dot fades in, travels the full length of the path, then fades out.
+ * Refined for subtle, professional animation with smooth easing.
  */
 export function animateDot(
   dot: SVGCircleElement,
@@ -17,16 +16,16 @@ export function animateDot(
     dot,
     { opacity: 0 },
     {
-      opacity: 1,
+      opacity: 0.9, // Slightly reduced for subtlety
       duration,
-      ease: "power1.inOut",
+      ease: "sine.inOut", // Smoother, more refined easing
       onUpdate() {
         const progress: number = this.progress();
         const pt = path.getPointAtLength(progress * len);
         gsap.set(dot, { attr: { cx: pt.x, cy: pt.y } });
       },
       onComplete() {
-        gsap.set(dot, { opacity: 0 });
+        gsap.to(dot, { opacity: 0, duration: 0.12, ease: "power2.out" });
       },
     },
     startTime,
@@ -35,6 +34,7 @@ export function animateDot(
 
 /**
  * Animate a dot in REVERSE along an SVG path (end → start).
+ * Refined for subtle, professional animation with smooth easing.
  */
 export function animateDotReverse(
   dot: SVGCircleElement,
@@ -48,16 +48,16 @@ export function animateDotReverse(
     dot,
     { opacity: 0 },
     {
-      opacity: 1,
+      opacity: 0.9, // Slightly reduced for subtlety
       duration,
-      ease: "power1.inOut",
+      ease: "sine.inOut", // Smoother, more refined easing
       onUpdate() {
         const progress: number = this.progress();
         const pt = path.getPointAtLength((1 - progress) * len);
         gsap.set(dot, { attr: { cx: pt.x, cy: pt.y } });
       },
       onComplete() {
-        gsap.set(dot, { opacity: 0 });
+        gsap.to(dot, { opacity: 0, duration: 0.12, ease: "power2.out" });
       },
     },
     startTime,

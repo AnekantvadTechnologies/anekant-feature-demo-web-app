@@ -2,32 +2,32 @@
  *  Reusable SVG helper components for slide diagrams
  * ──────────────────────────────────────────────────────────── */
 
-/** Subtle dot-grid background pattern */
+/** Very subtle dot-grid background pattern for minimalist aesthetic */
 export function DotGrid({ id = "dotgrid" }: { id?: string }) {
   return (
     <pattern
       id={id}
       x="0"
       y="0"
-      width="24"
-      height="24"
+      width="32"
+      height="32"
       patternUnits="userSpaceOnUse"
     >
       <circle
-        cx="12"
-        cy="12"
-        r="0.7"
+        cx="16"
+        cy="16"
+        r="0.5"
         fill="var(--text-muted)"
-        opacity="0.15"
+        opacity="0.06"
       />
     </pattern>
   );
 }
 
-/** Gaussian blur + composite glow filter */
+/** Refined soft glow filter for minimalist aesthetic */
 export function GlowFilter({
   id,
-  stdDev = 4,
+  stdDev = 3,
 }: {
   id: string;
   stdDev?: number;
@@ -43,16 +43,16 @@ export function GlowFilter({
   );
 }
 
-/** Standard set of glow filter defs used across slides */
+/** Standard set of refined glow filter defs used across slides */
 export function StandardDefs({ dotGridId = "dotgrid" }: { dotGridId?: string }) {
   return (
     <>
       <DotGrid id={dotGridId} />
-      <GlowFilter id="glowRed" stdDev={3} />
-      <GlowFilter id="glowCyan" stdDev={4} />
-      <GlowFilter id="glowGreen" stdDev={3} />
-      <GlowFilter id="glowPurple" stdDev={3} />
-      <GlowFilter id="glowOrange" stdDev={3} />
+      <GlowFilter id="glowRed" stdDev={2.5} />
+      <GlowFilter id="glowCyan" stdDev={3} />
+      <GlowFilter id="glowGreen" stdDev={2.5} />
+      <GlowFilter id="glowPurple" stdDev={2.5} />
+      <GlowFilter id="glowOrange" stdDev={2.5} />
     </>
   );
 }

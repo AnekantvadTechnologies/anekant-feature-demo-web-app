@@ -22,38 +22,38 @@ interface LLMFlowSlideProps {
 }
 
 /* ────────────────────────────────────────────────────────────
- *  Layout constants
+ *  Layout constants — Reorganized for integrated Agent flow
  * ──────────────────────────────────────────────────────────── */
 
 /* Left side nodes */
-const EXCHANGE = { cx: 80, cy: 340, w: 110, h: 64 };
-const REDIS = { cx: 260, cy: 340, w: 130, h: 100 };
+const EXCHANGE = { cx: 100, cy: 280, w: 100, h: 58 };
+const REDIS = { cx: 270, cy: 280, w: 120, h: 90 };
 
 /* Centre: single engine */
-const ENGINE_W = 260;
-const ENGINE_H = 180;
-const ENGINE = { cx: 520, cy: 340, w: ENGINE_W, h: ENGINE_H };
+const ENGINE_W = 240;
+const ENGINE_H = 170;
+const ENGINE = { cx: 490, cy: 280, w: ENGINE_W, h: ENGINE_H };
 
-/* Broker (right of engine) */
-const BROKER = { cx: 830, cy: 260, w: 120, h: 70 };
+/* Broker (right of engine, same row) */
+const BROKER = { cx: 780, cy: 220, w: 110, h: 62 };
 
 /* Metrics DB (below engine) */
-const METRICS_DB = { cx: 520, cy: 570, w: 140, h: 56 };
+const METRICS_DB = { cx: 420, cy: 520, w: 130, h: 52 };
 
-/* Metrics API (right of DB) */
-const METRICS_API = { cx: 730, cy: 570, w: 130, h: 56 };
+/* Metrics API (right of DB, leading to Agent) */
+const METRICS_API = { cx: 600, cy: 520, w: 120, h: 52 };
 
-/* AI Agent (far right, large) */
-const AGENT = { cx: 1000, cy: 480, w: 200, h: 160 };
+/* AI Agent — Now centrally positioned below the main flow */
+const AGENT = { cx: 820, cy: 520, w: 180, h: 140 };
 
-/* LLM Cloud (top right) */
-const LLM = { cx: 1250, cy: 340, w: 140, h: 90 };
+/* LLM Cloud — Positioned beside Agent for integrated feel */
+const LLM = { cx: 1050, cy: 460, w: 130, h: 80 };
 
 /* Agent sub-items */
 const AGENT_ITEMS = ["Fetch Metrics", "Generate Charts", "Build Prompt"];
 
 /* ────────────────────────────────────────────────────────────
- *  Path builders
+ *  Path builders — Updated for new integrated layout
  * ──────────────────────────────────────────────────────────── */
 const pathExToRedis = () =>
   bezierH(EXCHANGE.cx + EXCHANGE.w / 2, EXCHANGE.cy, REDIS.cx - REDIS.w / 2, REDIS.cy);
@@ -62,23 +62,23 @@ const pathRedisToEngine = () =>
   bezierH(REDIS.cx + REDIS.w / 2, REDIS.cy, ENGINE.cx - ENGINE.w / 2, ENGINE.cy);
 
 const pathEngineToBroker = () =>
-  bezierH(ENGINE.cx + ENGINE.w / 2, ENGINE.cy - 40, BROKER.cx - BROKER.w / 2, BROKER.cy);
+  bezierH(ENGINE.cx + ENGINE.w / 2, ENGINE.cy - 30, BROKER.cx - BROKER.w / 2, BROKER.cy);
 
 const pathBrokerToEngine = (): string => {
   const x1 = BROKER.cx - BROKER.w / 2;
-  const y1 = BROKER.cy + 20;
+  const y1 = BROKER.cy + 18;
   const x2 = ENGINE.cx + ENGINE.w / 2;
-  const y2 = ENGINE.cy - 15;
+  const y2 = ENGINE.cy - 10;
   const cpx = (x1 + x2) / 2;
-  return `M ${x1} ${y1} C ${cpx} ${y1 + 30}, ${cpx} ${y2 + 20}, ${x2} ${y2}`;
+  return `M ${x1} ${y1} C ${cpx} ${y1 + 25}, ${cpx} ${y2 + 20}, ${x2} ${y2}`;
 };
 
 const pathEngineToMetricsDB = (): string => {
-  const x1 = ENGINE.cx;
+  const x1 = ENGINE.cx - 30;
   const y1 = ENGINE.cy + ENGINE.h / 2;
   const x2 = METRICS_DB.cx;
   const y2 = METRICS_DB.cy - METRICS_DB.h / 2;
-  return `M ${x1} ${y1} L ${x2} ${y2}`;
+  return `M ${x1} ${y1} C ${x1} ${y1 + 40}, ${x2} ${y2 - 40}, ${x2} ${y2}`;
 };
 
 const pathDBToAPI = () =>
@@ -88,24 +88,25 @@ const pathAPIToAgent = () =>
   bezierH(METRICS_API.cx + METRICS_API.w / 2, METRICS_API.cy, AGENT.cx - AGENT.w / 2, AGENT.cy);
 
 const pathAgentToLLM = () =>
-  bezierH(AGENT.cx + AGENT.w / 2, AGENT.cy - 40, LLM.cx - LLM.w / 2, LLM.cy);
+  bezierH(AGENT.cx + AGENT.w / 2, AGENT.cy - 30, LLM.cx - LLM.w / 2, LLM.cy);
 
+/* LLM response back to Agent - path goes FROM LLM TO Agent */
 const pathLLMToAgent = (): string => {
   const x1 = LLM.cx - LLM.w / 2;
-  const y1 = LLM.cy + 25;
+  const y1 = LLM.cy + 20;
   const x2 = AGENT.cx + AGENT.w / 2;
-  const y2 = AGENT.cy - 10;
+  const y2 = AGENT.cy + 10;
   const cpx = (x1 + x2) / 2;
-  return `M ${x1} ${y1} C ${cpx} ${y1 + 35}, ${cpx} ${y2 + 20}, ${x2} ${y2}`;
+  return `M ${x1} ${y1} C ${cpx} ${y1 + 30}, ${cpx} ${y2 + 25}, ${x2} ${y2}`;
 };
 
 const pathAgentToRedis = (): string => {
-  /* Curves from agent bottom, around to the left, back up to Redis */
+  /* Curves from agent left side, around and back up to Redis */
   const x1 = AGENT.cx - AGENT.w / 2;
-  const y1 = AGENT.cy + AGENT.h / 2;
+  const y1 = AGENT.cy + 20;
   const x2 = REDIS.cx + REDIS.w / 2;
   const y2 = REDIS.cy + 30;
-  return `M ${x1} ${y1} C ${x1 - 100} ${y1 + 80}, ${x2 + 60} ${y2 + 80}, ${x2} ${y2}`;
+  return `M ${x1} ${y1} C ${x1 - 80} ${y1 + 60}, ${x2 + 40} ${y2 + 100}, ${x2} ${y2}`;
 };
 
 /* Engine internal fan-out (reuse for single engine) */
@@ -142,30 +143,37 @@ export function LLMFlowSlide({ active }: LLMFlowSlideProps) {
     fastLoopRef.current?.kill();
     slowLoopRef.current?.kill();
 
-    /* ──────── REVEAL ──────── */
+    /* ──────── REVEAL (refined, subtle animations) ──────── */
     const reveal = gsap.timeline();
     revealTlRef.current = reveal;
 
-    reveal.fromTo(titleRef.current, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" });
-
-    const nodes = svg.querySelectorAll(".ane-node");
-    reveal.fromTo(nodes, { opacity: 0, scale: 0.85, transformOrigin: "center center" }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.04, ease: "back.out(1.3)" }, "-=0.2");
-
+    /* Set ALL paths invisible initially (fixes lines-before-boxes issue) */
     const allPaths = svg.querySelectorAll<SVGPathElement>(".ane-path, .int-path, .ret-path, .slow-path");
     allPaths.forEach((p) => {
       const len = p.getTotalLength();
-      gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
+      gsap.set(p, { opacity: 0, strokeDasharray: len, strokeDashoffset: len });
     });
-    reveal.to(allPaths, { strokeDashoffset: 0, duration: 0.6, stagger: 0.02, ease: "power2.inOut" });
 
+    /* Title */
+    reveal.fromTo(titleRef.current, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "expo.out" });
+
+    /* Nodes (boxes first) */
+    const nodes = svg.querySelectorAll(".ane-node");
+    reveal.fromTo(nodes, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out" }, "-=0.2");
+
+    /* Paths (after nodes, with opacity) */
+    reveal.to(allPaths, { opacity: 0.3, strokeDashoffset: 0, duration: 0.6, stagger: 0.02, ease: "power1.inOut" });
+
+    /* Internal items */
     const items = svg.querySelectorAll(".engine-item, .agent-item");
-    reveal.fromTo(items, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.03, ease: "power2.out" }, "-=0.3");
+    reveal.fromTo(items, { opacity: 0, x: -6 }, { opacity: 1, x: 0, duration: 0.3, stagger: 0.03, ease: "power2.out" }, "-=0.3");
 
+    /* Labels */
     const labels = svg.querySelectorAll(".label-node");
-    reveal.fromTo(labels, { opacity: 0 }, { opacity: 1, duration: 0.4, stagger: 0.04 }, "-=0.2");
+    reveal.fromTo(labels, { opacity: 0 }, { opacity: 1, duration: 0.35, stagger: 0.04 }, "-=0.2");
 
-    /* ──────── FAST LOOP (tick flow) ──────── */
-    const fast = gsap.timeline({ repeat: -1, repeatDelay: 0.2, delay: 0.5 });
+    /* ──────── FAST LOOP (tick flow, starts after reveal) ──────── */
+    const fast = gsap.timeline({ repeat: -1, repeatDelay: 0.2, paused: true });
     fastLoopRef.current = fast;
 
     const p1 = svg.querySelector<SVGPathElement>(".path-ex-redis");
@@ -183,8 +191,8 @@ export function LLMFlowSlide({ active }: LLMFlowSlideProps) {
     }
 
     const checks = svg.querySelectorAll<SVGElement>(".engine-check");
-    fast.fromTo(checks, { opacity: 0, scale: 0, transformOrigin: "center center" }, { opacity: 1, scale: 1, duration: 0.2, stagger: 0.02, ease: "back.out(2)" }, 0.75);
-    fast.to(checks, { opacity: 0, duration: 0.2 }, "+=0.3");
+    fast.fromTo(checks, { opacity: 0, scale: 0.8, transformOrigin: "center center" }, { opacity: 1, scale: 1, duration: 0.2, stagger: 0.03, ease: "power2.out" }, 0.75);
+    fast.to(checks, { opacity: 0, duration: 0.2 }, "+=0.25");
 
     /* Tick → Broker → Fill */
     const pe2b = svg.querySelector<SVGPathElement>(".path-engine-broker");
@@ -202,9 +210,15 @@ export function LLMFlowSlide({ active }: LLMFlowSlideProps) {
 
     fast.to({}, { duration: 0.3 }); // pad
 
-    /* ──────── SLOW LOOP (agent cycle) ──────── */
-    const slow = gsap.timeline({ repeat: -1, repeatDelay: 1.0, delay: 1.5 });
+    /* ──────── SLOW LOOP (agent cycle, starts after reveal) ──────── */
+    const slow = gsap.timeline({ repeat: -1, repeatDelay: 1.0, paused: true });
     slowLoopRef.current = slow;
+
+    /* Start both loops only after reveal finishes */
+    reveal.eventCallback("onComplete", () => {
+      fast.play();
+      slow.delay(0.5).play(); // Slight delay between fast and slow loops
+    });
 
     const pDbApi = svg.querySelector<SVGPathElement>(".path-db-api");
     const dDbApi = svg.querySelector<SVGCircleElement>(".dot-db-api");
@@ -230,9 +244,10 @@ export function LLMFlowSlide({ active }: LLMFlowSlideProps) {
       slow.to(llmBox, { attr: { strokeWidth: 1.2 }, duration: 0.3 }, "+=0.5");
     }
 
+    /* LLM response back to Agent - use forward animation since path goes LLM → Agent */
     const pLlmAgent = svg.querySelector<SVGPathElement>(".path-llm-agent");
     const dLlmAgent = svg.querySelector<SVGCircleElement>(".dot-llm-agent");
-    if (pLlmAgent && dLlmAgent) animateDotReverse(dLlmAgent, pLlmAgent, slow, 0.5, 3.0);
+    if (pLlmAgent && dLlmAgent) animateDot(dLlmAgent, pLlmAgent, slow, 0.5, 3.0);
 
     const pAgentRedis = svg.querySelector<SVGPathElement>(".path-agent-redis");
     const dAgentRedis = svg.querySelector<SVGCircleElement>(".dot-agent-redis");

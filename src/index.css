@@ -1,49 +1,54 @@
 @import "tailwindcss";
 
-/* ── Dark theme (default) ── */
+/* ── Dark theme (default) — Tech Minimalist ── */
 :root {
-  --bg-primary: #0a0f1a;
-  --bg-secondary: #111827;
-  --bg-card: #1a2332;
-  --bg-card-hover: #1f2b3d;
+  /* Backgrounds - slightly warmer dark tones */
+  --bg-primary: #0c0f14;
+  --bg-secondary: #13161d;
+  --bg-card: #1a1d26;
+  --bg-card-hover: #22252f;
 
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  /* Text - softer contrast */
+  --text-primary: #e8eaed;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
 
-  --accent-cyan: #22d3ee;
-  --accent-blue: #3b82f6;
-  --accent-purple: #a78bfa;
-  --accent-green: #34d399;
-  --accent-red: #f87171;
-  --accent-orange: #fb923c;
-  --accent-yellow: #fbbf24;
+  /* Accents - desaturated, sophisticated tones */
+  --accent-cyan: #5eead4;
+  --accent-blue: #60a5fa;
+  --accent-purple: #c4b5fd;
+  --accent-green: #6ee7b7;
+  --accent-red: #fca5a5;
+  --accent-orange: #fdba74;
+  --accent-yellow: #fcd34d;
 
-  --glow-cyan: 0 0 20px rgba(34, 211, 238, 0.4);
-  --glow-blue: 0 0 20px rgba(59, 130, 246, 0.4);
-  --glow-green: 0 0 20px rgba(52, 211, 153, 0.4);
-  --glow-red: 0 0 20px rgba(248, 113, 113, 0.4);
+  /* Reduced glow intensity for minimalist feel */
+  --glow-cyan: 0 0 24px rgba(94, 234, 212, 0.15);
+  --glow-blue: 0 0 24px rgba(96, 165, 250, 0.15);
+  --glow-green: 0 0 24px rgba(110, 231, 183, 0.15);
+  --glow-red: 0 0 24px rgba(252, 165, 165, 0.15);
+  --glow-purple: 0 0 24px rgba(196, 181, 253, 0.15);
 
-  --border-subtle: rgba(148, 163, 184, 0.1);
-  --border-accent: rgba(34, 211, 238, 0.3);
+  --border-subtle: rgba(156, 163, 175, 0.08);
+  --border-accent: rgba(94, 234, 212, 0.2);
 
   --transition-theme: 0.3s ease;
 
   color-scheme: dark;
 }
 
-/* ── Light theme ── */
+/* ── Light theme — Tech Minimalist ── */
 [data-theme="light"] {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #f1f5f9;
+  --bg-primary: #fafbfc;
+  --bg-secondary: #f3f4f6;
   --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
+  --bg-card-hover: #f9fafb;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
 
-  --accent-cyan: #0891b2;
+  --accent-cyan: #0d9488;
   --accent-blue: #2563eb;
   --accent-purple: #7c3aed;
   --accent-green: #059669;
@@ -51,13 +56,14 @@
   --accent-orange: #ea580c;
   --accent-yellow: #d97706;
 
-  --glow-cyan: 0 0 20px rgba(8, 145, 178, 0.2);
-  --glow-blue: 0 0 20px rgba(37, 99, 235, 0.2);
-  --glow-green: 0 0 20px rgba(5, 150, 105, 0.2);
-  --glow-red: 0 0 20px rgba(220, 38, 38, 0.2);
+  --glow-cyan: 0 0 20px rgba(13, 148, 136, 0.12);
+  --glow-blue: 0 0 20px rgba(37, 99, 235, 0.12);
+  --glow-green: 0 0 20px rgba(5, 150, 105, 0.12);
+  --glow-red: 0 0 20px rgba(220, 38, 38, 0.12);
+  --glow-purple: 0 0 20px rgba(124, 58, 237, 0.12);
 
-  --border-subtle: rgba(15, 23, 42, 0.1);
-  --border-accent: rgba(8, 145, 178, 0.3);
+  --border-subtle: rgba(17, 24, 39, 0.06);
+  --border-accent: rgba(13, 148, 136, 0.2);
 
   color-scheme: light;
 }
@@ -80,11 +86,18 @@ body,
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   transition: background-color var(--transition-theme),
     color var(--transition-theme);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography refinements ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 700;
 }
 
 /* ── Utility classes for theme colors ── */
