@@ -2,7 +2,6 @@ import {
   ENGINE_ITEMS,
   ITEM_H,
   ITEM_W,
-  ITEM_GAP,
   itemX,
   itemY,
   bezierH,

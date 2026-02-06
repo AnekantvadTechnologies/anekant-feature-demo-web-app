@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { SlideLayout } from "@/components/layout/SlideLayout";
-import { VB_W, VB_H, ENGINE_ITEMS, itemX, itemY, bezierH } from "./shared/constants";
+import { VB_W, VB_H, ENGINE_ITEMS, bezierH } from "./shared/constants";
 import { StandardDefs } from "./shared/svg-helpers";
 import { EngineBox, ENGINE_ITEM_COUNT } from "./shared/engine-box";
 import { animateDot, animateDotReverse } from "./shared/animate-dot";
@@ -11,7 +11,8 @@ import { animateDot, animateDotReverse } from "./shared/animate-dot";
  *  SCALED 20% LARGER - NO blue/purple colors
  *
  *  Single full-screen slide showing TWO rows:
- *    Top  (~30%) — Traditional setup: sequential, slow, misses ticks
+ *    Top  (~30%) — Traditional polling: Exchange streams ticks →
+ *                  Tick Buffer (overflow) → Polling Gateway → Process → Strategy
  *    Bottom (~70%) — Anekant engine: Exchange → Redis → 3 Engines
  *                    (internal parallel processing) → Broker → Fills back
  * ================================================================ */
@@ -21,33 +22,45 @@ interface EngineFlowSlideProps {
 }
 
 /* ────────────────────────────────────────────────────────────
- *  TRADITIONAL ROW — top (scaled 20%)
+ *  TRADITIONAL ROW — Polling Architecture (redesigned)
+ *  Shows: Exchange → Tick Buffer (with overflow) → Polling Gateway → Process → Strategy
  * ──────────────────────────────────────────────────────────── */
 const DIVIDER_Y = 276;
-const TRAD_Y = 168;
-const TRAD_BOX_W = 192;
-const TRAD_BOX_H = 58;
-const TRAD_GAP = 60;
+const TRAD_Y = 156;
+const TRAD_BOX_H = 62;
 
-const TRAD_STEPS = [
-  { label: "Exchange" },
-  { label: "Poll Data" },
-  { label: "Rebuild Candles" },
-  { label: "Recompute Indicators" },
-  { label: "Evaluate Strategy" },
-];
+/* Exchange box - where ticks originate */
+const TRAD_EXCHANGE = { cx: 120, cy: TRAD_Y, w: 140, h: TRAD_BOX_H };
 
-function tradStepX(index: number): number {
-  const totalW =
-    TRAD_STEPS.length * TRAD_BOX_W + (TRAD_STEPS.length - 1) * TRAD_GAP;
-  const startX = (VB_W - totalW) / 2;
-  return startX + index * (TRAD_BOX_W + TRAD_GAP) + TRAD_BOX_W / 2;
+/* Tick Buffer - shows accumulation and overflow */
+const TRAD_BUFFER = { cx: 340, cy: TRAD_Y, w: 160, h: 90 };
+
+/* Polling Gateway - grabs snapshot periodically */
+const TRAD_POLL = { cx: 580, cy: TRAD_Y, w: 180, h: TRAD_BOX_H };
+
+/* Process Snapshot - candles + indicators combined */
+const TRAD_PROCESS = { cx: 820, cy: TRAD_Y, w: 180, h: TRAD_BOX_H };
+
+/* Evaluate Strategy */
+const TRAD_STRATEGY = { cx: 1060, cy: TRAD_Y, w: 180, h: TRAD_BOX_H };
+
+/* Number of tick dots in the buffer animation */
+const BUFFER_TICK_COUNT = 6;
+
+function tradPathExToBuffer(): string {
+  return `M ${TRAD_EXCHANGE.cx + TRAD_EXCHANGE.w / 2} ${TRAD_Y} L ${TRAD_BUFFER.cx - TRAD_BUFFER.w / 2} ${TRAD_Y}`;
 }
 
-function tradPath(fromIdx: number, toIdx: number): string {
-  const x1 = tradStepX(fromIdx) + TRAD_BOX_W / 2;
-  const x2 = tradStepX(toIdx) - TRAD_BOX_W / 2;
-  return `M ${x1} ${TRAD_Y} L ${x2} ${TRAD_Y}`;
+function tradPathBufferToPoll(): string {
+  return `M ${TRAD_BUFFER.cx + TRAD_BUFFER.w / 2} ${TRAD_Y} L ${TRAD_POLL.cx - TRAD_POLL.w / 2} ${TRAD_Y}`;
+}
+
+function tradPathPollToProcess(): string {
+  return `M ${TRAD_POLL.cx + TRAD_POLL.w / 2} ${TRAD_Y} L ${TRAD_PROCESS.cx - TRAD_PROCESS.w / 2} ${TRAD_Y}`;
+}
+
+function tradPathProcessToStrategy(): string {
+  return `M ${TRAD_PROCESS.cx + TRAD_PROCESS.w / 2} ${TRAD_Y} L ${TRAD_STRATEGY.cx - TRAD_STRATEGY.w / 2} ${TRAD_Y}`;
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -178,21 +191,12 @@ export function EngineFlowSlide({ active }: EngineFlowSlideProps) {
     /* Traditional paths (after nodes) */
     reveal.to(tradPaths, { opacity: 0.35, strokeDashoffset: 0, duration: 0.5, stagger: 0.04, ease: "power1.inOut" });
 
-    /* Missed marks */
-    const missed = svg.querySelectorAll(".missed-mark");
-    reveal.fromTo(
-      missed,
-      { opacity: 0, scale: 0.8 },
-      { opacity: 1, scale: 1, duration: 0.25, stagger: 0.06, transformOrigin: "center center", ease: "power2.out" },
-      "-=0.15",
-    );
-
-    /* Traditional extras */
+    /* Traditional extras (stale data label, etc) */
     const tradExtra = svg.querySelectorAll(".trad-extra");
     reveal.fromTo(
       tradExtra,
       { opacity: 0 },
-      { opacity: 1, duration: 0.35, stagger: 0.04 },
+      { opacity: 0.6, duration: 0.35, stagger: 0.04 },
       "-=0.1",
     );
 
@@ -232,18 +236,146 @@ export function EngineFlowSlide({ active }: EngineFlowSlideProps) {
       loop.play();
     });
 
-    /* — Traditional: slow crawl — */
-    const tradDot = svg.querySelector<SVGCircleElement>(".trad-dot");
-    if (tradDot) {
-      const firstX = tradStepX(0);
-      gsap.set(tradDot, { attr: { cx: firstX, cy: TRAD_Y }, opacity: 0 });
-      loop.to(tradDot, { opacity: 1, duration: 0.15 }, 0);
-      let t = 0.15;
-      for (let i = 1; i < TRAD_STEPS.length; i++) {
-        loop.to(tradDot, { attr: { cx: tradStepX(i) }, duration: 0.7, ease: "power1.inOut" }, `${t}`);
-        t += 0.7 + 0.5;
-      }
-      loop.to(tradDot, { opacity: 0, duration: 0.2 }, `${t}`);
+    /* — Traditional: polling cycle with tick accumulation & drop — */
+    
+    /* Animate continuous incoming ticks (Exchange → Buffer) */
+    const inTickPath = svg.querySelector<SVGPathElement>(".trad-path-ex-buf");
+    const inTicks = svg.querySelectorAll<SVGCircleElement>(".in-tick");
+    if (inTickPath && inTicks.length > 0) {
+      const pathLen = inTickPath.getTotalLength();
+      inTicks.forEach((tick, i) => {
+        const startT = i * 0.5; /* staggered start times */
+        loop.fromTo(
+          tick,
+          { opacity: 0 },
+          {
+            opacity: 0.8,
+            duration: 0.4,
+            ease: "sine.inOut",
+            onUpdate() {
+              const progress = this.progress();
+              const pt = inTickPath.getPointAtLength(progress * pathLen);
+              gsap.set(tick, { attr: { cx: pt.x, cy: pt.y } });
+            },
+            onComplete() {
+              gsap.to(tick, { opacity: 0, duration: 0.1 });
+            },
+          },
+          startT,
+        );
+      });
+    }
+
+    /* Animate buffer ticks appearing (accumulation) */
+    const bufferTicks = svg.querySelectorAll<SVGCircleElement>(".buffer-tick");
+    bufferTicks.forEach((tick, i) => {
+      const appearT = 0.3 + i * 0.35;
+      loop.fromTo(
+        tick,
+        { opacity: 0, scale: 0.5 },
+        { opacity: 0.7, scale: 1, duration: 0.2, transformOrigin: "center center", ease: "back.out" },
+        appearT,
+      );
+    });
+
+    /* Show overflow indicator */
+    const tradOverflow = svg.querySelector(".trad-overflow");
+    if (tradOverflow) {
+      loop.fromTo(
+        tradOverflow,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" },
+        2.0,
+      );
+    }
+
+    /* Animate dropped dots falling */
+    const dropDots = svg.querySelectorAll<SVGCircleElement>(".drop-dot");
+    dropDots.forEach((dot, i) => {
+      loop.fromTo(
+        dot,
+        { opacity: 0.6, attr: { cy: TRAD_BUFFER.cy + TRAD_BUFFER.h / 2 + 32 } },
+        { opacity: 0, attr: { cy: TRAD_BUFFER.cy + TRAD_BUFFER.h / 2 + 55 }, duration: 0.6, ease: "power2.in" },
+        2.2 + i * 0.15,
+      );
+    });
+
+    /* Pulse the polling timer */
+    const pollTimer = svg.querySelector(".poll-timer");
+    const pollBox = svg.querySelector(".poll-box");
+    if (pollTimer && pollBox) {
+      loop.to(pollTimer, { scale: 1.3, transformOrigin: "center center", duration: 0.15, ease: "power2.out" }, 2.5);
+      loop.to(pollTimer, { scale: 1, duration: 0.15, ease: "power2.in" }, 2.65);
+      loop.to(pollBox, { stroke: "var(--accent-amber)", duration: 0.1 }, 2.5);
+      loop.to(pollBox, { stroke: "var(--accent-red)", duration: 0.3 }, 2.7);
+    }
+
+    /* Poll grabs ONE tick - animate from buffer through the rest of the pipeline */
+    const pollDot = svg.querySelector<SVGCircleElement>(".trad-poll-dot");
+    const bufPollPath = svg.querySelector<SVGPathElement>(".trad-path-buf-poll");
+    const pollProcPath = svg.querySelector<SVGPathElement>(".trad-path-poll-proc");
+    const procStratPath = svg.querySelector<SVGPathElement>(".trad-path-proc-strat");
+    
+    if (pollDot && bufPollPath && pollProcPath && procStratPath) {
+      /* Start position at buffer */
+      gsap.set(pollDot, { attr: { cx: TRAD_BUFFER.cx + TRAD_BUFFER.w / 2, cy: TRAD_Y }, opacity: 0 });
+      
+      /* Fade in */
+      loop.to(pollDot, { opacity: 1, duration: 0.15 }, 2.6);
+      
+      /* Buffer → Poll (slow) */
+      const bufPollLen = bufPollPath.getTotalLength();
+      loop.to(pollDot, {
+        duration: 0.6,
+        ease: "power1.inOut",
+        onUpdate() {
+          const progress = this.progress();
+          const pt = bufPollPath.getPointAtLength(progress * bufPollLen);
+          gsap.set(pollDot, { attr: { cx: pt.x, cy: pt.y } });
+        },
+      }, 2.75);
+      
+      /* Poll → Process (slow) */
+      const pollProcLen = pollProcPath.getTotalLength();
+      loop.to(pollDot, {
+        duration: 0.7,
+        ease: "power1.inOut",
+        onUpdate() {
+          const progress = this.progress();
+          const pt = pollProcPath.getPointAtLength(progress * pollProcLen);
+          gsap.set(pollDot, { attr: { cx: pt.x, cy: pt.y } });
+        },
+      }, 3.45);
+      
+      /* Process → Strategy (slow) */
+      const procStratLen = procStratPath.getTotalLength();
+      loop.to(pollDot, {
+        duration: 0.7,
+        ease: "power1.inOut",
+        onUpdate() {
+          const progress = this.progress();
+          const pt = procStratPath.getPointAtLength(progress * procStratLen);
+          gsap.set(pollDot, { attr: { cx: pt.x, cy: pt.y } });
+        },
+      }, 4.25);
+      
+      /* Fade out */
+      loop.to(pollDot, { opacity: 0, duration: 0.2 }, 5.0);
+    }
+
+    /* Clear buffer ticks (they got dropped) */
+    loop.to(bufferTicks, { opacity: 0, duration: 0.3, stagger: 0.05 }, 2.8);
+    
+    /* Hide overflow indicator */
+    if (tradOverflow) {
+      loop.to(tradOverflow, { opacity: 0, duration: 0.2 }, 5.0);
+    }
+
+    /* Show stats callout */
+    const tradStats = svg.querySelector(".trad-stats");
+    if (tradStats) {
+      loop.fromTo(tradStats, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.5);
+      loop.to(tradStats, { opacity: 0, duration: 0.2 }, 5.0);
     }
 
     /* — Anekant: fast parallel flow — */
@@ -293,7 +425,7 @@ export function EngineFlowSlide({ active }: EngineFlowSlideProps) {
     }
 
     /* Pad so both rows visible before repeating */
-    const totalTradTime = 0.15 + (TRAD_STEPS.length - 1) * (0.7 + 0.5) + 0.2;
+    const totalTradTime = 5.5; /* Traditional poll cycle takes ~5.5s */
     loop.to({}, { duration: Math.max(0, totalTradTime - loop.duration()) });
 
     return () => {
@@ -334,126 +466,197 @@ export function EngineFlowSlide({ active }: EngineFlowSlideProps) {
 
         {/* Contrast labels near divider */}
         <text
-          x={VB_W / 2 - 216} y={DIVIDER_Y - 10}
-          textAnchor="middle" className="text-[12px] italic font-medium" fill="var(--accent-red)" opacity={0.7}
+          x={VB_W / 2 - 260} y={DIVIDER_Y - 10}
+          textAnchor="middle" className="text-[11px] italic font-medium" fill="var(--accent-red)" opacity={0.7}
         >
-          1 tick at a time
+          Polls stale snapshots, drops intermediate ticks
         </text>
         <text
-          x={VB_W / 2 + 216} y={DIVIDER_Y + 22}
-          textAnchor="middle" className="text-[12px] italic font-medium" fill="var(--accent-amber)" opacity={0.7}
+          x={VB_W / 2 + 260} y={DIVIDER_Y + 22}
+          textAnchor="middle" className="text-[11px] italic font-medium" fill="var(--accent-amber)" opacity={0.7}
         >
-          All ticks, all engines, in parallel
+          Every tick, every engine, processed in parallel
         </text>
 
         {/* ═══════════ ROW LABELS ═══════════ */}
         <g className="row-label" style={{ opacity: 0 }}>
           <rect
-            x={36} y={72} width={180} height={34} rx={7}
+            x={36} y={62} width={260} height={34} rx={7}
             fill="color-mix(in srgb, var(--accent-red) 14%, transparent)"
             stroke="var(--accent-red)" strokeWidth={1} opacity={0.8}
           />
-          <text x={126} y={95} textAnchor="middle" className="text-[14px] font-bold uppercase tracking-wider" fill="var(--accent-red)">
-            Traditional
+          <text x={166} y={85} textAnchor="middle" className="text-[13px] font-bold uppercase tracking-wider" fill="var(--accent-red)">
+            Traditional Polling
           </text>
         </g>
 
         <g className="row-label" style={{ opacity: 0 }}>
           <rect
-            x={36} y={DIVIDER_Y + 17} width={204} height={34} rx={7}
+            x={36} y={DIVIDER_Y + 17} width={240} height={34} rx={7}
             fill="color-mix(in srgb, var(--accent-amber) 14%, transparent)"
             stroke="var(--accent-amber)" strokeWidth={1} opacity={0.8}
           />
-          <text x={138} y={DIVIDER_Y + 40} textAnchor="middle" className="text-[14px] font-bold uppercase tracking-wider" fill="var(--accent-amber)">
+          <text x={156} y={DIVIDER_Y + 40} textAnchor="middle" className="text-[13px] font-bold uppercase tracking-wider" fill="var(--accent-amber)">
             Anekant Engine
           </text>
         </g>
 
-        {/* ═══════════ TRADITIONAL ROW ═══════════ */}
+        {/* ═══════════ TRADITIONAL ROW — Polling Architecture ═══════════ */}
 
-        {/* Step boxes */}
-        {TRAD_STEPS.map((step, i) => {
-          const cx = tradStepX(i);
-          return (
-            <g key={`trad-${i}`} className="trad-node" style={{ opacity: 0 }}>
-              <rect
-                x={cx - TRAD_BOX_W / 2} y={TRAD_Y - TRAD_BOX_H / 2}
-                width={TRAD_BOX_W} height={TRAD_BOX_H} rx={12}
-                fill="var(--bg-card)" stroke="var(--accent-red)" strokeWidth={1.2} opacity={0.8}
-              />
-              <text x={cx} y={TRAD_Y + 6} textAnchor="middle" className="text-[15px] font-semibold" fill="var(--accent-red)">
-                {step.label}
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Connecting paths */}
-        {TRAD_STEPS.slice(0, -1).map((_, i) => (
-          <path
-            key={`tp-${i}`} d={tradPath(i, i + 1)} className="trad-path"
-            fill="none" stroke="var(--accent-red)" strokeWidth={1.8} opacity={0.35} strokeDasharray="6 5"
+        {/* Exchange box - continuous tick stream */}
+        <g className="trad-node" style={{ opacity: 0 }}>
+          <rect
+            x={TRAD_EXCHANGE.cx - TRAD_EXCHANGE.w / 2} y={TRAD_EXCHANGE.cy - TRAD_EXCHANGE.h / 2}
+            width={TRAD_EXCHANGE.w} height={TRAD_EXCHANGE.h} rx={12}
+            fill="var(--bg-card)" stroke="var(--accent-red)" strokeWidth={1.2} opacity={0.9}
           />
-        ))}
-
-        {/* Slow dot */}
-        <circle className="trad-dot" r={7} fill="var(--accent-red)" opacity={0} filter="url(#glowRed)" />
-
-        {/* Tick pile-up indicator (left side — stacked bars) */}
-        <g className="trad-extra" style={{ opacity: 0 }}>
-          {[0, 1, 2, 3, 4].map((i) => {
-            const bx = tradStepX(0) - TRAD_BOX_W / 2 - 60;
-            const by = TRAD_Y - 22 + i * 10;
-            return (
-              <rect
-                key={`pile-${i}`}
-                x={bx} y={by} width={34} height={6} rx={2}
-                fill="var(--accent-red)" opacity={0.18 + i * 0.14}
-              />
-            );
-          })}
-          <text
-            x={tradStepX(0) - TRAD_BOX_W / 2 - 43}
-            y={TRAD_Y + 41}
-            textAnchor="middle" className="text-[11px] font-medium" fill="var(--accent-red)" opacity={0.7}
-          >
-            ticks pile up
+          <text x={TRAD_EXCHANGE.cx} y={TRAD_EXCHANGE.cy - 4} textAnchor="middle" className="text-[14px] font-bold" fill="var(--accent-red)">
+            Exchange
+          </text>
+          <text x={TRAD_EXCHANGE.cx} y={TRAD_EXCHANGE.cy + 14} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">
+            continuous ticks
           </text>
         </g>
 
-        {/* Missed-tick X marks */}
-        {[1, 3].map((stepIdx) => {
-          const cx = tradStepX(stepIdx);
-          const mx = cx + TRAD_BOX_W / 2 + 26;
-          const my = TRAD_Y;
-          return (
-            <g key={`miss-${stepIdx}`} className="missed-mark" style={{ opacity: 0 }}>
-              <line x1={mx - 8} y1={my - 8} x2={mx + 8} y2={my + 8} stroke="var(--accent-red)" strokeWidth={3} opacity={0.7} strokeLinecap="round" />
-              <line x1={mx + 8} y1={my - 8} x2={mx - 8} y2={my + 8} stroke="var(--accent-red)" strokeWidth={3} opacity={0.7} strokeLinecap="round" />
-              <text x={mx} y={my + 26} textAnchor="middle" className="text-[12px] font-medium" fill="var(--accent-red)" opacity={0.8}>
-                missed
-              </text>
-            </g>
-          );
-        })}
+        {/* Tick Buffer - shows accumulation and overflow */}
+        <g className="trad-node" style={{ opacity: 0 }}>
+          <rect
+            x={TRAD_BUFFER.cx - TRAD_BUFFER.w / 2} y={TRAD_BUFFER.cy - TRAD_BUFFER.h / 2}
+            width={TRAD_BUFFER.w} height={TRAD_BUFFER.h} rx={12}
+            fill="var(--bg-card)" stroke="var(--accent-red)" strokeWidth={1.4} strokeDasharray="4 2"
+          />
+          <text x={TRAD_BUFFER.cx} y={TRAD_BUFFER.cy - 24} textAnchor="middle" className="text-[13px] font-semibold" fill="var(--accent-red)">
+            Tick Buffer
+          </text>
+          <text x={TRAD_BUFFER.cx} y={TRAD_BUFFER.cy - 8} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">
+            (ignored between polls)
+          </text>
+          {/* Buffer slots visualization */}
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <rect
+              key={`slot-${i}`}
+              x={TRAD_BUFFER.cx - 70 + (i % 3) * 48}
+              y={TRAD_BUFFER.cy + 6 + Math.floor(i / 3) * 18}
+              width={42} height={14} rx={3}
+              fill="var(--bg-secondary)" stroke="var(--accent-red)" strokeWidth={0.5} opacity={0.3}
+              className="buffer-slot"
+            />
+          ))}
+          {/* Animated tick dots inside buffer (positioned by GSAP) */}
+          {Array.from({ length: BUFFER_TICK_COUNT }).map((_, i) => (
+            <circle
+              key={`buffer-tick-${i}`}
+              className={`buffer-tick buffer-tick-${i}`}
+              cx={TRAD_BUFFER.cx - 50 + (i % 3) * 48}
+              cy={TRAD_BUFFER.cy + 13 + Math.floor(i / 3) * 18}
+              r={5}
+              fill="var(--accent-red)"
+              opacity={0}
+            />
+          ))}
+        </g>
 
-        {/* "wait…" labels */}
-        {[1, 2, 3].map((i) => {
-          const x1 = tradStepX(i) + TRAD_BOX_W / 2;
-          const x2 = tradStepX(i + 1) - TRAD_BOX_W / 2;
-          return (
-            <text key={`wait-${i}`} x={(x1 + x2) / 2} y={TRAD_Y + 38} textAnchor="middle" className="text-[12px] italic" fill="var(--text-muted)" opacity={0.6}>
-              wait…
-            </text>
-          );
-        })}
+        {/* Overflow/dropped indicator */}
+        <g className="trad-overflow" style={{ opacity: 0 }}>
+          <text x={TRAD_BUFFER.cx} y={TRAD_BUFFER.cy + TRAD_BUFFER.h / 2 + 18} textAnchor="middle" className="text-[11px] font-bold" fill="var(--accent-red)">
+            ↓ DROPPED
+          </text>
+          {/* Falling/fading dots */}
+          {[0, 1, 2].map((i) => (
+            <circle
+              key={`drop-${i}`}
+              className={`drop-dot drop-dot-${i}`}
+              cx={TRAD_BUFFER.cx - 20 + i * 20}
+              cy={TRAD_BUFFER.cy + TRAD_BUFFER.h / 2 + 32}
+              r={4}
+              fill="var(--accent-red)"
+              opacity={0}
+            />
+          ))}
+        </g>
 
-        {/* Cycle time label */}
+        {/* Polling Gateway */}
+        <g className="trad-node" style={{ opacity: 0 }}>
+          <rect
+            x={TRAD_POLL.cx - TRAD_POLL.w / 2} y={TRAD_POLL.cy - TRAD_POLL.h / 2}
+            width={TRAD_POLL.w} height={TRAD_POLL.h} rx={12}
+            fill="var(--bg-card)" stroke="var(--accent-red)" strokeWidth={1.2}
+            className="poll-box"
+          />
+          <text x={TRAD_POLL.cx} y={TRAD_POLL.cy - 4} textAnchor="middle" className="text-[13px] font-semibold" fill="var(--accent-red)">
+            Polling Gateway
+          </text>
+          <text x={TRAD_POLL.cx} y={TRAD_POLL.cy + 14} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">
+            every ~5 seconds
+          </text>
+          {/* Clock/timer icon */}
+          <circle cx={TRAD_POLL.cx + TRAD_POLL.w / 2 - 20} cy={TRAD_POLL.cy - TRAD_POLL.h / 2 + 14} r={8} fill="none" stroke="var(--accent-red)" strokeWidth={1.2} className="poll-timer" />
+          <line x1={TRAD_POLL.cx + TRAD_POLL.w / 2 - 20} y1={TRAD_POLL.cy - TRAD_POLL.h / 2 + 14} x2={TRAD_POLL.cx + TRAD_POLL.w / 2 - 20} y2={TRAD_POLL.cy - TRAD_POLL.h / 2 + 8} stroke="var(--accent-red)" strokeWidth={1.2} className="poll-timer-hand" />
+        </g>
+
+        {/* Process Snapshot */}
+        <g className="trad-node" style={{ opacity: 0 }}>
+          <rect
+            x={TRAD_PROCESS.cx - TRAD_PROCESS.w / 2} y={TRAD_PROCESS.cy - TRAD_PROCESS.h / 2}
+            width={TRAD_PROCESS.w} height={TRAD_PROCESS.h} rx={12}
+            fill="var(--bg-card)" stroke="var(--accent-red)" strokeWidth={1.2} opacity={0.8}
+          />
+          <text x={TRAD_PROCESS.cx} y={TRAD_PROCESS.cy - 4} textAnchor="middle" className="text-[13px] font-semibold" fill="var(--accent-red)">
+            Process Snapshot
+          </text>
+          <text x={TRAD_PROCESS.cx} y={TRAD_PROCESS.cy + 14} textAnchor="middle" className="text-[10px]" fill="var(--text-muted)">
+            candles + indicators
+          </text>
+        </g>
+
+        {/* Evaluate Strategy */}
+        <g className="trad-node" style={{ opacity: 0 }}>
+          <rect
+            x={TRAD_STRATEGY.cx - TRAD_STRATEGY.w / 2} y={TRAD_STRATEGY.cy - TRAD_STRATEGY.h / 2}
+            width={TRAD_STRATEGY.w} height={TRAD_STRATEGY.h} rx={12}
+            fill="var(--bg-card)" stroke="var(--accent-red)" strokeWidth={1.2} opacity={0.8}
+          />
+          <text x={TRAD_STRATEGY.cx} y={TRAD_STRATEGY.cy + 5} textAnchor="middle" className="text-[13px] font-semibold" fill="var(--accent-red)">
+            Evaluate Strategy
+          </text>
+        </g>
+
+        {/* Connecting paths */}
+        <path d={tradPathExToBuffer()} className="trad-path trad-path-ex-buf" fill="none" stroke="var(--accent-red)" strokeWidth={2} opacity={0.4} />
+        <path d={tradPathBufferToPoll()} className="trad-path trad-path-buf-poll" fill="none" stroke="var(--accent-red)" strokeWidth={1.8} opacity={0.35} strokeDasharray="6 5" />
+        <path d={tradPathPollToProcess()} className="trad-path trad-path-poll-proc" fill="none" stroke="var(--accent-red)" strokeWidth={1.8} opacity={0.35} strokeDasharray="6 5" />
+        <path d={tradPathProcessToStrategy()} className="trad-path trad-path-proc-strat" fill="none" stroke="var(--accent-red)" strokeWidth={1.8} opacity={0.35} strokeDasharray="6 5" />
+
+        {/* Incoming tick dots (Exchange → Buffer) */}
+        {[0, 1, 2, 3].map((i) => (
+          <circle key={`in-tick-${i}`} className={`in-tick in-tick-${i}`} r={5} fill="var(--accent-red)" opacity={0} filter="url(#glowRed)" />
+        ))}
+
+        {/* Single poll dot (Buffer → Poll → Process → Strategy) */}
+        <circle className="trad-poll-dot" r={6} fill="var(--accent-red)" opacity={0} filter="url(#glowRed)" />
+
+        {/* Stats callout - positioned above the traditional row */}
+        <g className="trad-stats" style={{ opacity: 0 }}>
+          <rect
+            x={TRAD_STRATEGY.cx - 20} y={TRAD_Y - 55}
+            width={180} height={40} rx={8}
+            fill="color-mix(in srgb, var(--accent-red) 12%, var(--bg-card))"
+            stroke="var(--accent-red)" strokeWidth={1} opacity={0.9}
+          />
+          <text x={TRAD_STRATEGY.cx + 70} y={TRAD_Y - 40} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-red)">
+            ~50 ticks arrive per poll
+          </text>
+          <text x={TRAD_STRATEGY.cx + 70} y={TRAD_Y - 24} textAnchor="middle" className="text-[10px] font-bold" fill="var(--accent-red)">
+            → 1 stale snapshot processed
+          </text>
+        </g>
+
+        {/* "stale data" label between poll and process */}
         <text
-          x={tradStepX(2)} y={TRAD_Y + 58}
-          textAnchor="middle" className="trad-extra text-[13px] font-semibold" fill="var(--accent-red)" opacity={0}
+          x={(TRAD_POLL.cx + TRAD_PROCESS.cx) / 2} y={TRAD_Y + 44}
+          textAnchor="middle" className="trad-extra text-[10px] italic" fill="var(--text-muted)" opacity={0}
         >
-          ~5s per cycle
+          stale data
         </text>
 
         {/* ═══════════ ANEKANT ROW ═══════════ */}

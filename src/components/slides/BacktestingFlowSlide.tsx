@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { SlideLayout } from "@/components/layout/SlideLayout";
-import { VB_W, VB_H, ENGINE_ITEMS, itemX, itemY, bezierH } from "./shared/constants";
+import { VB_W, VB_H, ENGINE_ITEMS, bezierH } from "./shared/constants";
 import { StandardDefs } from "./shared/svg-helpers";
 import { EngineBox, ENGINE_ITEM_COUNT } from "./shared/engine-box";
 import { animateDot, animateDotReverse } from "./shared/animate-dot";
@@ -87,14 +87,7 @@ const pathLLMToAgent = (): string => {
   return `M ${x1} ${y1} C ${cpx} ${y1 + 30}, ${cpx} ${y2 + 30}, ${x2} ${y2}`;
 };
 
-/* Engine internal fan-out */
-function engineInternalPath(itemIdx: number): string {
-  const x1 = ENGINE.cx - ENGINE.w / 2 + 24;
-  const y1 = ENGINE.cy;
-  const x2 = itemX(ENGINE.cx) - 132 / 2;
-  const y2 = itemY(ENGINE.cy, ENGINE.h, itemIdx);
-  return bezierH(x1, y1, x2, y2);
-}
+
 
 /* ================================================================
  *  Main component
