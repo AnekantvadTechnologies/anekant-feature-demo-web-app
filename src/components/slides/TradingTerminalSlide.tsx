@@ -234,10 +234,10 @@ export function TradingTerminalSlide({ active }: TradingTerminalSlideProps) {
     <SlideLayout className="justify-start pt-6">
       <div ref={titleRef} className="mb-3 text-center opacity-0">
         <h2 className="text-5xl font-extrabold tracking-tight" style={{ color: "var(--text-primary)" }}>
-          Power Any Trading Interface
+          The AI-Ready Execution Harness
         </h2>
         <p className="mt-2 text-base font-medium" style={{ color: "var(--text-muted)" }}>
-          One engine powers web, mobile, AI, and custom terminals
+          Agents delegate execution to the engine, focusing purely on decision-making
         </p>
       </div>
 
@@ -335,13 +335,13 @@ export function TradingTerminalSlide({ active }: TradingTerminalSlideProps) {
           <text x={COMMAND_CENTER.cx} y={COMMAND_CENTER.cy + 35} textAnchor="middle" className="text-[11px]" fill="var(--accent-emerald)">Live Now</text>
         </g>
 
-        {/* ═══════════ AI AGENT ═══════════ */}
+        {/* ═══════════ AI TRADING HARNESS ═══════════ */}
         <g className="interface-node" style={{ opacity: 0 }}>
           <rect x={AI_AGENT.cx - AI_AGENT.w / 2} y={AI_AGENT.cy - AI_AGENT.h / 2} width={AI_AGENT.w} height={AI_AGENT.h} rx={14} fill="var(--bg-card)" stroke="var(--accent-coral)" strokeWidth={1.8} />
-          <text x={AI_AGENT.cx} y={AI_AGENT.cy - 25} textAnchor="middle" className="text-[15px] font-bold" fill="var(--text-primary)">AI Agent</text>
-          <text x={AI_AGENT.cx} y={AI_AGENT.cy - 5} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">Autonomous Decisions</text>
-          <text x={AI_AGENT.cx} y={AI_AGENT.cy + 15} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">LLM-Powered</text>
-          <text x={AI_AGENT.cx} y={AI_AGENT.cy + 35} textAnchor="middle" className="text-[11px]" fill="var(--accent-emerald)">Live Now</text>
+          <text x={AI_AGENT.cx} y={AI_AGENT.cy - 25} textAnchor="middle" className="text-[15px] font-bold" fill="var(--text-primary)">AI Trading Harness</text>
+          <text x={AI_AGENT.cx} y={AI_AGENT.cy - 5} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">Agent Delegates Execution</text>
+          <text x={AI_AGENT.cx} y={AI_AGENT.cy + 15} textAnchor="middle" className="text-[11px]" fill="var(--text-muted)">Unified Context via API</text>
+          <text x={AI_AGENT.cx} y={AI_AGENT.cy + 35} textAnchor="middle" className="text-[11px]" fill="var(--accent-emerald)">AI-Ready Interface</text>
         </g>
 
         {/* ═══════════ MOBILE APP (Future) ═══════════ */}
@@ -376,20 +376,20 @@ export function TradingTerminalSlide({ active }: TradingTerminalSlideProps) {
 
         {/* Decisions label */}
         <g className="callout" style={{ opacity: 0 }}>
-          <rect x={AI_AGENT.cx - AI_AGENT.w / 2 - 105} y={AI_AGENT.cy + 5} width={90} height={24} rx={6} fill="color-mix(in srgb, var(--accent-coral) 20%, var(--bg-card))" stroke="var(--accent-coral)" strokeWidth={0.8} />
-          <text x={AI_AGENT.cx - AI_AGENT.w / 2 - 60} y={AI_AGENT.cy + 22} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-coral)">Decisions</text>
+          <rect x={AI_AGENT.cx - AI_AGENT.w / 2 - 115} y={AI_AGENT.cy + 5} width={100} height={24} rx={6} fill="color-mix(in srgb, var(--accent-coral) 20%, var(--bg-card))" stroke="var(--accent-coral)" strokeWidth={0.8} />
+          <text x={AI_AGENT.cx - AI_AGENT.w / 2 - 65} y={AI_AGENT.cy + 22} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-coral)">Trade Decisions</text>
         </g>
 
-        {/* Metrics label */}
+        {/* Context label */}
         <g className="callout" style={{ opacity: 0 }}>
-          <rect x={AI_AGENT.cx - AI_AGENT.w / 2 - 105} y={AI_AGENT.cy + 40} width={90} height={24} rx={6} fill="color-mix(in srgb, var(--accent-emerald) 20%, var(--bg-card))" stroke="var(--accent-emerald)" strokeWidth={0.8} />
-          <text x={AI_AGENT.cx - AI_AGENT.w / 2 - 60} y={AI_AGENT.cy + 57} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-emerald)">Metrics</text>
+          <rect x={AI_AGENT.cx - AI_AGENT.w / 2 - 125} y={AI_AGENT.cy + 40} width={110} height={24} rx={6} fill="color-mix(in srgb, var(--accent-emerald) 20%, var(--bg-card))" stroke="var(--accent-emerald)" strokeWidth={0.8} />
+          <text x={AI_AGENT.cx - AI_AGENT.w / 2 - 70} y={AI_AGENT.cy + 57} textAnchor="middle" className="text-[10px] font-semibold" fill="var(--accent-emerald)">Managed Context</text>
         </g>
 
         {/* Key message badge */}
         <g className="callout" style={{ opacity: 0 }}>
-          <rect x={CENTER_X - 200} y={VB_H - 60} width={400} height={45} rx={10} fill="color-mix(in srgb, var(--accent-amber) 15%, var(--bg-card))" stroke="var(--accent-amber)" strokeWidth={1.2} />
-          <text x={CENTER_X} y={VB_H - 32} textAnchor="middle" className="text-[14px] font-bold" fill="var(--accent-amber)">One Engine, Unlimited Interfaces</text>
+          <rect x={CENTER_X - 240} y={VB_H - 60} width={480} height={45} rx={10} fill="color-mix(in srgb, var(--accent-amber) 15%, var(--bg-card))" stroke="var(--accent-amber)" strokeWidth={1.2} />
+          <text x={CENTER_X} y={VB_H - 32} textAnchor="middle" className="text-[14px] font-bold" fill="var(--accent-amber)">Engine Handles Execution · Agent Focuses on Strategy</text>
         </g>
 
         {/* ═══════════ FLOW DOTS ═══════════ */}
