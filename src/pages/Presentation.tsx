@@ -6,16 +6,30 @@ import { Navigation } from "@/components/layout/Navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 import { EngineFlowSlide } from "@/components/slides/EngineFlowSlide";
+import { HorizontalScalingSlide } from "@/components/slides/HorizontalScalingSlide";
+import { TradingTerminalSlide } from "@/components/slides/TradingTerminalSlide";
 import { TraditionalBacktestSlide } from "@/components/slides/TraditionalBacktestSlide";
 import { CodeReuseSlide } from "@/components/slides/CodeReuseSlide";
 import { LLMFlowSlide } from "@/components/slides/LLMFlowSlide";
+import { OrderReplicationSlide } from "@/components/slides/OrderReplicationSlide";
+import { RiskManagementSlide } from "@/components/slides/RiskManagementSlide";
+import { BrokerAgnosticSlide } from "@/components/slides/BrokerAgnosticSlide";
+import { ObservabilitySlide } from "@/components/slides/ObservabilitySlide";
+import { StrategyLifecycleSlide } from "@/components/slides/StrategyLifecycleSlide";
 import { BacktestingFlowSlide } from "@/components/slides/BacktestingFlowSlide";
 
 const SLIDES = [
   { id: "engine-flow", Component: EngineFlowSlide },
-  { id: "traditional-backtest", Component: TraditionalBacktestSlide },
-  { id: "code-reuse", Component: CodeReuseSlide },
+  { id: "horizontal-scaling", Component: HorizontalScalingSlide },
+  { id: "trading-terminal", Component: TradingTerminalSlide },
   { id: "llm-flow", Component: LLMFlowSlide },
+  { id: "order-replication", Component: OrderReplicationSlide },
+  { id: "risk-management", Component: RiskManagementSlide },
+  { id: "broker-agnostic", Component: BrokerAgnosticSlide },
+  { id: "observability", Component: ObservabilitySlide },
+  { id: "strategy-lifecycle", Component: StrategyLifecycleSlide },
+  { id: "code-reuse", Component: CodeReuseSlide },
+  { id: "traditional-backtest", Component: TraditionalBacktestSlide },
   { id: "backtesting-flow", Component: BacktestingFlowSlide },
 ];
 
